@@ -123,16 +123,21 @@ jobs:
       - name: Checkout repositorio
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        shell: powershell
+        run: pip install requests --quiet
+
       - name: Notificar sucesso
         if: needs.extrair-dados.result == 'success'
         shell: powershell
-        run: |
-          pip install requests --quiet 2>$null
-          python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status sucesso --detalhes "Dados de Google Ads, Meta Ads, TikTok Ads, GA4 e Search Console atualizados"
+        run: python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status sucesso --detalhes "Dados de Google Ads, Meta Ads, TikTok Ads, GA4 e Search Console atualizados"
 
       - name: Notificar erro
         if: needs.extrair-dados.result == 'failure'
         shell: powershell
-        run: |
-          pip install requests --quiet 2>$null
-          python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status erro
+        run: python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status erro
