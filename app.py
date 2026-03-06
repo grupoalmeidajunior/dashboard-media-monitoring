@@ -23,6 +23,7 @@ from insights_midia import (
     detectar_anomalias, render_alerta,
     COR_VERDE, COR_AMARELO, COR_VERMELHO,
 )
+from explicacoes_graficos import render_explicacao, EXPLICACOES
 
 # =============================================================================
 # CONFIG
@@ -375,6 +376,8 @@ def pagina_resumo_executivo():
     with c4:
         render_kpi("CPA Medio", cpa_medio, "moeda")
 
+    render_explicacao(EXPLICACOES['resumo']['kpis'])
+
     # Semaforos
     st.markdown("---")
     s1, s2, s3 = st.columns(3)
@@ -403,6 +406,8 @@ def pagina_resumo_executivo():
                      hole=0.4)
         fig.update_traces(textinfo='label+percent', textposition='outside')
         render_chart(fig, key="verba_pie")
+
+        render_explicacao(EXPLICACOES['resumo']['distribuicao_verba'])
 
         # Insight box
         if not df_verba.empty:
@@ -453,6 +458,7 @@ def pagina_resumo_executivo():
                              color='plataforma', color_discrete_map=CORES_PLATAFORMA)
             fig.update_layout(margin=dict(t=30, l=10, r=10, b=10))
             render_chart(fig, key="treemap_camp")
+            render_explicacao(EXPLICACOES['resumo']['treemap'])
     else:
         st.info("Sem dados de campanhas disponiveis.")
 
@@ -482,11 +488,7 @@ def pagina_tendencias():
                   color_discrete_map=CORES_PLATAFORMA, markers=True)
     fig.update_layout(yaxis_title='ROAS', xaxis_title='Mes')
     render_chart(fig, key="roas_mensal")
-
-    st.markdown(explicacao_grafico(
-        "Como interpretar",
-        "ROAS (Return on Ad Spend) = Receita / Custo. Acima de 4x e excelente, abaixo de 1x indica prejuizo."
-    ), unsafe_allow_html=True)
+    render_explicacao(EXPLICACOES['tendencias']['roas_cpa'])
 
     # CPA por plataforma
     st.subheader("CPA por Plataforma — Evolucao Mensal")
@@ -512,6 +514,7 @@ def pagina_tendencias():
                   color_discrete_map=CORES_PLATAFORMA)
     fig.update_layout(yaxis_title='Investimento (R$)', xaxis_title='Data')
     render_chart(fig, key="area_invest")
+    render_explicacao(EXPLICACOES['tendencias']['area_empilhada'])
 
     # Heatmap dia da semana x hora (se houver dados horarios)
     st.subheader("Performance por Dia da Semana")
@@ -528,6 +531,7 @@ def pagina_tendencias():
     ])
     fig.update_layout(barmode='group', xaxis_title='Dia da Semana')
     render_chart(fig, key="heatmap_dia")
+    render_explicacao(EXPLICACOES['tendencias']['dia_semana'])
 
 
 # =============================================================================
@@ -577,6 +581,7 @@ def pagina_google_ads():
                 'custo': 'R$ {:.2f}', 'valor_conversoes': 'R$ {:.2f}',
                 'ctr': '{:.2f}%', 'roas': '{:.1f}x', 'cpa': 'R$ {:.2f}'
             }), use_container_width=True)
+            render_explicacao(EXPLICACOES['google_ads']['campanhas'])
 
     with tab2:
         df = dados.get('keywords', pd.DataFrame())
@@ -599,6 +604,7 @@ def pagina_google_ads():
                                    x='quality_score', nbins=10, color_discrete_sequence=[ACCENT])
                 fig.update_layout(xaxis_title='Quality Score (1-10)', yaxis_title='Quantidade')
                 render_chart(fig, key="qs_hist")
+            render_explicacao(EXPLICACOES['google_ads']['keywords'])
 
     with tab3:
         df = dados.get('demografico', pd.DataFrame())
@@ -620,6 +626,7 @@ def pagina_google_ads():
             if not df_gen.empty:
                 fig = px.bar(df_gen, x='segmento', y='conversoes', color_discrete_sequence=[ACCENT2])
                 render_chart(fig, key="ga_gen")
+            render_explicacao(EXPLICACOES['google_ads']['demografico'])
 
     with tab4:
         df = dados.get('geografico', pd.DataFrame())
@@ -634,6 +641,7 @@ def pagina_google_ads():
                          color_discrete_sequence=[ACCENT])
             fig.update_layout(yaxis={'categoryorder': 'total ascending'})
             render_chart(fig, key="ga_geo")
+            render_explicacao(EXPLICACOES['google_ads']['geografico'])
 
     with tab5:
         df = dados.get('dispositivos', pd.DataFrame())
@@ -648,6 +656,7 @@ def pagina_google_ads():
                 fig = px.pie(df_dev, values='custo', names='dispositivo', hole=0.4,
                              color_discrete_sequence=[ACCENT, ACCENT2, COR_VERDE, COR_AMARELO])
                 render_chart(fig, key="ga_dev")
+            render_explicacao(EXPLICACOES['google_ads']['dispositivos'])
 
 
 # =============================================================================
@@ -690,6 +699,7 @@ def pagina_meta_ads():
             st.dataframe(df_camp.style.format({
                 'custo': 'R$ {:.2f}', 'ctr': '{:.2f}%', 'cpm': 'R$ {:.2f}'
             }), use_container_width=True)
+            render_explicacao(EXPLICACOES['meta_ads']['campanhas'])
 
     with tab2:
         df = dados.get('plataforma', pd.DataFrame())
@@ -705,6 +715,7 @@ def pagina_meta_ads():
                 fig = px.bar(df_plt, x=col_plt, y=['impressoes', 'cliques', 'custo'],
                              barmode='group', color_discrete_sequence=[ACCENT, COR_VERDE, COR_VERMELHO])
                 render_chart(fig, key="meta_plt")
+                render_explicacao(EXPLICACOES['meta_ads']['plataformas'])
 
     with tab3:
         df = dados.get('posicionamento', pd.DataFrame())
@@ -722,6 +733,7 @@ def pagina_meta_ads():
                 fig = px.bar(df_pos, x=col_pos, y='custo', color='ctr',
                              color_continuous_scale='RdYlGn')
                 render_chart(fig, key="meta_pos")
+                render_explicacao(EXPLICACOES['meta_ads']['posicionamento'])
 
     with tab4:
         df = dados.get('video', pd.DataFrame())
@@ -738,6 +750,7 @@ def pagina_meta_ads():
                 ])
                 fig = px.funnel(df_video, x='views', y='quartil')
                 render_chart(fig, key="meta_video")
+                render_explicacao(EXPLICACOES['meta_ads']['video'])
 
     with tab5:
         df_idade = dados.get('demografico_idade', pd.DataFrame())
@@ -759,6 +772,7 @@ def pagina_meta_ads():
             fig = px.pie(df_gen, values='custo', names='gender', hole=0.4,
                          color_discrete_sequence=['#1877F2', '#E1306C', '#999'])
             render_chart(fig, key="meta_gen")
+        render_explicacao(EXPLICACOES['meta_ads']['demografico'])
 
 
 # =============================================================================
@@ -804,6 +818,7 @@ def pagina_tiktok_ads():
                 for i, (k, v) in enumerate(eng_data.items()):
                     with cols[i]:
                         render_kpi(k.capitalize(), v, "inteiro")
+            render_explicacao(EXPLICACOES['tiktok_ads']['campanhas'])
 
     with tab2:
         df = dados.get('video_engagement', pd.DataFrame())
@@ -820,12 +835,7 @@ def pagina_tiktok_ads():
                 fig = px.funnel(df_funil, x='Views', y='Quartil',
                                 color_discrete_sequence=['#000000'])
                 render_chart(fig, key="tt_video")
-
-                st.markdown(explicacao_grafico(
-                    "Taxa de retencao de video",
-                    "Mostra quantos usuarios assistiram 25%, 50%, 75% e 100% do video. "
-                    "Uma grande queda entre 25% e 50% indica que o hook inicial nao esta retendo a atencao."
-                ), unsafe_allow_html=True)
+                render_explicacao(EXPLICACOES['tiktok_ads']['video'])
 
     with tab3:
         df_idade = dados.get('demografico_idade', pd.DataFrame())
@@ -875,6 +885,7 @@ def pagina_ga4_search_console():
             br_medio = df['bounceRate'].mean() * 100 if df['bounceRate'].max() <= 1 else df['bounceRate'].mean()
             cor, msg = semaforo_bounce_rate(br_medio)
             st.markdown(render_semaforo(cor, msg), unsafe_allow_html=True)
+            render_explicacao(EXPLICACOES['ga4']['fontes'])
 
     with tab2:
         df = carregar_csv("GA4/landing_pages.csv")
@@ -891,6 +902,7 @@ def pagina_ga4_search_console():
             st.dataframe(df_lp.style.format({
                 'bounceRate': '{:.1f}%', 'taxa_conversao': '{:.2f}%', 'totalRevenue': 'R$ {:.2f}'
             }), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['landing_pages'])
 
     with tab3:
         df = carregar_csv("Search_Console/oportunidades_seo.csv")
@@ -907,20 +919,17 @@ def pagina_ga4_search_console():
             st.dataframe(df_q.style.format({
                 'ctr': '{:.2f}%', 'posicao': '{:.1f}'
             }), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['consultas'])
 
             # Oportunidades SEO
             if 'oportunidade_seo' in df.columns:
                 oportunidades = df[df['oportunidade_seo'] == True]
                 if not oportunidades.empty:
                     st.subheader("Oportunidades SEO (Alto Impressoes + Baixo CTR)")
-                    st.markdown(explicacao_grafico(
-                        "O que sao oportunidades SEO?",
-                        "Consultas com muitas impressoes mas baixo CTR indicam que o site aparece nas buscas "
-                        "mas o titulo/descricao nao atrai cliques. Melhorar meta tags pode aumentar trafego organico."
-                    ), unsafe_allow_html=True)
                     st.dataframe(oportunidades[['query', 'impressoes', 'cliques', 'ctr', 'posicao']]
                                  .sort_values('impressoes', ascending=False).head(20),
                                  use_container_width=True)
+                    render_explicacao(EXPLICACOES['ga4']['oportunidades'])
 
 
 # =============================================================================
@@ -963,6 +972,8 @@ def pagina_comparativo():
         fig.update_layout(yaxis_title='ROAS', showlegend=False)
         render_chart(fig, key="comp_roas")
 
+    render_explicacao(EXPLICACOES['comparativo']['cpa_roas'])
+
     # Insight CPA
     if len(df_plt) >= 2:
         melhor = df_plt.loc[df_plt['cpa'].idxmin()]
@@ -995,6 +1006,7 @@ def pagina_comparativo():
             ))
         fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])))
         render_chart(fig, key="radar_comp")
+        render_explicacao(EXPLICACOES['comparativo']['radar'])
 
     # Ranking automatico
     st.subheader("Ranking de Plataformas")
@@ -1067,6 +1079,7 @@ def pagina_funil_integrado():
             marker=dict(color=ACCENT),
         ))
         render_chart(fig, key="funil_total")
+        render_explicacao(EXPLICACOES['funil']['integrado'])
 
 
 # =============================================================================
@@ -1104,12 +1117,7 @@ def pagina_audiencia():
                             color_continuous_scale='RdYlGn_r',
                             labels=dict(color='CPA (R$)'))
             render_chart(fig, key="aud_heatmap")
-
-            st.markdown(explicacao_grafico(
-                "Como interpretar o heatmap de CPA",
-                "Cores mais verdes indicam CPA mais baixo (melhor). "
-                "Identifique quais combinacoes de faixa etaria x plataforma tem o menor custo por aquisicao."
-            ), unsafe_allow_html=True)
+            render_explicacao(EXPLICACOES['audiencia']['demografico_cruzado'])
 
     # Genero
     st.subheader("Investimento por Genero x Plataforma")
@@ -1171,6 +1179,8 @@ def pagina_onde_investir():
         fig.update_traces(textinfo='label+percent')
         render_chart(fig, key="oi_recomendada")
 
+    render_explicacao(EXPLICACOES['onde_investir']['distribuicao'])
+
     st.markdown("---")
 
     # Cards de recomendacao
@@ -1216,6 +1226,8 @@ def pagina_onde_investir():
     else:
         st.warning("Ajuste os sliders para pelo menos uma plataforma.")
 
+    render_explicacao(EXPLICACOES['onde_investir']['simulador'])
+
 
 # =============================================================================
 # PAGINA: ALERTAS E ANOMALIAS
@@ -1227,12 +1239,7 @@ def pagina_alertas():
 
     if df_alertas.empty:
         st.success("Nenhum alerta detectado. Todas as metricas estao dentro dos padroes normais.")
-        st.markdown(explicacao_grafico(
-            "Como funciona a deteccao de anomalias",
-            "Monitoramos CPA, CTR e custo diario de cada plataforma. "
-            "Quando uma metrica desvia mais de 2 desvios-padrao da media movel de 7 dias, "
-            "um alerta e gerado automaticamente."
-        ), unsafe_allow_html=True)
+        render_explicacao(EXPLICACOES['alertas']['anomalias'])
         return
 
     # Filtro severidade
@@ -1257,6 +1264,8 @@ def pagina_alertas():
         st.markdown(f"<div class='kpi-card' style='border-left-color:#3498DB'>"
                     f"<div class='valor' style='color:#3498DB'>{n_baixa}</div>"
                     f"<div class='label'>Baixa Severidade</div></div>", unsafe_allow_html=True)
+
+    render_explicacao(EXPLICACOES['alertas']['anomalias'])
 
     st.markdown("---")
 
@@ -1290,6 +1299,7 @@ def pagina_alertas():
                                 a['desvio_pct'],
                                 a['severidade'],
                             ), unsafe_allow_html=True)
+    render_explicacao(EXPLICACOES['alertas']['saturacao'])
 
 
 # =============================================================================

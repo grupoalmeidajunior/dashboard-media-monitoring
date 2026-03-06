@@ -36,6 +36,8 @@ jobs:
       GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
       GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
       SEARCH_CONSOLE_SITE_URL: ${{ secrets.SEARCH_CONSOLE_SITE_URL }}
+      # Google Business Profile
+      GOOGLE_BUSINESS_ACCOUNT_ID: ${{ secrets.GOOGLE_BUSINESS_ACCOUNT_ID }}
 
     steps:
       - name: Checkout repositorio
@@ -79,6 +81,10 @@ jobs:
       - name: Extrair Search Console
         continue-on-error: true
         run: python scripts/extrair_search_console.py --dias 90
+
+      - name: Extrair Google Business Profile
+        continue-on-error: true
+        run: python scripts/extrair_google_business.py --dias 90
 
       - name: Consolidar dados cross-platform
         run: python scripts/consolidar_cross_platform.py

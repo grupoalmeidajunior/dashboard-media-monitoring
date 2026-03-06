@@ -86,7 +86,10 @@ def extrair_campanhas(client, customer_id, shopping_sigla, data_inicio, data_fim
             metrics.impressions, metrics.clicks, metrics.ctr, metrics.average_cpc,
             metrics.cost_micros, metrics.conversions, metrics.conversions_value,
             metrics.cost_per_conversion, metrics.search_impression_share,
-            metrics.view_through_conversions
+            metrics.view_through_conversions,
+            metrics.all_conversions, metrics.all_conversions_value,
+            metrics.interactions, metrics.interaction_rate,
+            metrics.video_views, metrics.video_view_rate
         FROM campaign
         WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
             AND campaign.status != 'REMOVED'
@@ -114,6 +117,12 @@ def extrair_campanhas(client, customer_id, shopping_sigla, data_inicio, data_fim
             'cpa': r.metrics.cost_per_conversion / 1_000_000 if r.metrics.cost_per_conversion else 0,
             'impression_share': r.metrics.search_impression_share,
             'view_through_conv': r.metrics.view_through_conversions,
+            'todas_conversoes': r.metrics.all_conversions,
+            'valor_todas_conversoes': r.metrics.all_conversions_value,
+            'interacoes': r.metrics.interactions,
+            'taxa_interacao': r.metrics.interaction_rate,
+            'video_views': r.metrics.video_views,
+            'video_view_rate': r.metrics.video_view_rate,
         })
     return data
 
