@@ -150,6 +150,21 @@ def injetar_css():
         background-color: transparent !important;
         border: none !important;
     }
+    [data-testid="stSidebar"] [data-testid="stExpander"] details {
+        background-color: transparent !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stExpanderDetails"] button {
+        background-color: transparent !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        color: white !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stExpanderDetails"] button:hover {
+        background-color: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.5) !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stExpanderDetails"] button p {
+        color: white !important;
+    }
 
     /* Recomendacao cards */
     .rec-card {
