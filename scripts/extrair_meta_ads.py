@@ -69,7 +69,6 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
         'video_avg_time_watched_actions',
         'video_p25_watched_actions', 'video_p50_watched_actions',
         'video_p75_watched_actions', 'video_p100_watched_actions',
-        'estimated_ad_recall_lift',
     ]
 
     params = {
@@ -122,7 +121,6 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
             'cpc': float(row_dict.get('cpc', 0)),
             'cpm': float(row_dict.get('cpm', 0)),
             'custo': float(row_dict.get('spend', 0)),
-            'ad_recall_lift': float(row_dict.get('estimated_ad_recall_lift', 0) or 0),
         }
 
         # Adicionar acoes desserializadas
