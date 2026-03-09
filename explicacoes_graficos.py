@@ -107,6 +107,20 @@ GOOGLE_DISPOSITIVOS = {
     'alerta': 'Se mais de 70% do trafego vem de mobile mas as conversoes sao todas desktop, ha um problema serio na experiencia mobile.',
 }
 
+GOOGLE_SEARCH_TERMS = {
+    'o_que_mostra': 'Os termos de busca reais que os usuarios digitaram no Google e que acionaram seus anuncios. Diferente de keywords (que voce configura), search terms sao o que as pessoas realmente buscaram.',
+    'como_interpretar': 'Termos com muitas impressoes e poucos cliques (CTR baixo) indicam que seu anuncio nao e relevante para essa busca. Termos com muitos cliques e zero conversoes estao desperdicando verba. Termos com conversoes e baixo custo sao oportunidades de ouro.',
+    'o_que_fazer': 'Adicione como keyword exata os termos que convertem bem. Adicione como negativa os termos irrelevantes com alto custo e zero conversao. Use os melhores termos para inspirar novos titulos de anuncio.',
+    'alerta': 'Se mais de 30% do custo vem de termos irrelevantes, a estrategia de match type esta muito ampla — considere usar mais correspondencia de frase e exata.',
+}
+
+GOOGLE_HORA_DIA = {
+    'o_que_mostra': 'Heatmap com a performance dos anuncios cruzando hora do dia e dia da semana. Mostra em quais momentos seus anuncios performam melhor ou pior.',
+    'como_interpretar': 'Celulas mais escuras indicam maior volume ou melhor performance naquele horario/dia. Identifique blocos de horario com alta conversao e baixo CPA — esses sao seus "horarios de ouro". Horarios com custo alto e zero conversoes sao candidatos a reducao de lance.',
+    'o_que_fazer': 'Configure ajustes de lance por horario (Ad Scheduling) no Google Ads: aumente lances nos horarios de ouro e reduza nos piores. Considere pausar completamente horarios com zero conversoes e custo significativo.',
+    'alerta': 'Se as conversoes se concentram em poucas horas do dia, voce pode economizar ate 30% do orcamento ajustando os horarios de exibicao.',
+}
+
 # =============================================================================
 # META ADS
 # =============================================================================
@@ -162,6 +176,20 @@ TIKTOK_VIDEO = {
 # =============================================================================
 # GA4 / SEARCH CONSOLE
 # =============================================================================
+
+GA4_DISPOSITIVOS = {
+    'o_que_mostra': 'Distribuicao de sessoes do site por tipo de dispositivo: desktop (computador), mobile (celular) e tablet.',
+    'como_interpretar': 'Veja de onde vem a maioria das visitas. Se mobile domina (>60%) mas as conversoes acontecem no desktop, o site pode ter problemas de usabilidade no celular. Compare a proporcao de sessoes com a proporcao de conversoes por dispositivo.',
+    'o_que_fazer': 'Se mobile tem muitas sessoes mas pouca conversao: priorize a otimizacao do site para celular (velocidade, formularios simples, checkout facil). Se tablet e insignificante, nao gaste tempo otimizando para ele.',
+    'alerta': 'Se mobile representa mais de 70% das sessoes mas menos de 30% das conversoes, ha uma perda significativa de receita por experiencia mobile ruim.',
+}
+
+GA4_GEOGRAFICO = {
+    'o_que_mostra': 'De quais cidades vem as visitas ao site, com volume de sessoes e usuarios.',
+    'como_interpretar': 'Identifique as cidades com maior volume de trafego. Compare com as cidades onde estao os shoppings Almeida Junior — o trafego deveria se concentrar nessas regioes. Cidades distantes com muito trafego podem indicar campanhas mal segmentadas.',
+    'o_que_fazer': 'Garanta que as campanhas de midia priorizem as cidades proximas aos shoppings. Se houver muito trafego de cidades onde nao ha shopping, revise a segmentacao geografica dos anuncios.',
+    'alerta': 'Trafego significativo de fora da area de atuacao pode indicar desperdicio de verba em campanhas sem segmentacao geografica.',
+}
 
 GA4_FONTES = {
     'o_que_mostra': 'De onde vem o trafego do site: busca organica, anuncios pagos, redes sociais, direto, email, etc.',
@@ -278,6 +306,8 @@ EXPLICACOES = {
         'demografico': GOOGLE_DEMOGRAFICO,
         'geografico': GOOGLE_GEOGRAFICO,
         'dispositivos': GOOGLE_DISPOSITIVOS,
+        'search_terms': GOOGLE_SEARCH_TERMS,
+        'hora_dia': GOOGLE_HORA_DIA,
     },
     'meta_ads': {
         'campanhas': META_CAMPANHAS,
@@ -295,6 +325,8 @@ EXPLICACOES = {
         'landing_pages': GA4_LANDING_PAGES,
         'consultas': SEARCH_CONSOLE_CONSULTAS,
         'oportunidades': SEARCH_CONSOLE_OPORTUNIDADES,
+        'dispositivos': GA4_DISPOSITIVOS,
+        'geografico': GA4_GEOGRAFICO,
     },
     'comparativo': {
         'cpa_roas': COMPARATIVO_CPA_ROAS,

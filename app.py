@@ -346,18 +346,43 @@ def filtro_periodo_sidebar(df, col_data='data'):
     return df[(df[col_data] >= inicio) & (df[col_data] <= data_max)]
 
 
+def filtro_shopping_sidebar(df, col='shopping'):
+    """Adiciona filtro de shopping no sidebar e retorna df filtrado."""
+    if df.empty or col not in df.columns:
+        return df
+
+    shoppings = sorted(df[col].dropna().unique().tolist())
+    if not shoppings:
+        return df
+
+    opcoes = ["Todos"] + shoppings
+    shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0)
+
+    if shopping_sel != "Todos":
+        return df[df[col] == shopping_sel]
+    return df
+
+
 # =============================================================================
 # PAGINA: RESUMO EXECUTIVO
 # =============================================================================
 def pagina_resumo_executivo():
     st.title("Resumo Executivo")
 
+    # Tentar carregar dados com shopping; fallback para diario sem shopping
+    df_shopping = carregar_csv("Consolidado/cross_platform_shopping_diario.csv")
     df_diario = carregar_csv("Consolidado/cross_platform_diario.csv")
-    if df_diario.empty:
+
+    if df_diario.empty and df_shopping.empty:
         st.info("Sem dados consolidados disponiveis. Execute os scripts de extracao.")
         return
 
-    df = filtro_periodo_sidebar(df_diario)
+    # Usar dados com shopping se disponiveis, senao fallback
+    if not df_shopping.empty and 'shopping' in df_shopping.columns:
+        df = filtro_periodo_sidebar(df_shopping)
+        df = filtro_shopping_sidebar(df)
+    else:
+        df = filtro_periodo_sidebar(df_diario)
 
     # KPIs
     investimento = df['custo'].sum()
@@ -545,7 +570,10 @@ def pagina_google_ads():
         st.info("Sem dados do Google Ads. Execute `scripts/extrair_google_ads.py`.")
         return
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Campanhas", "Palavras-Chave", "Demografico", "Geografico", "Dispositivos"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+        "Campanhas", "Palavras-Chave", "Demografico", "Geografico", "Dispositivos",
+        "Search Terms", "Hora / Dia"
+    ])
 
     with tab1:
         df = dados.get('campanhas', pd.DataFrame())
@@ -553,6 +581,8 @@ def pagina_google_ads():
             st.info("Sem dados de campanhas.")
         else:
             df = filtro_periodo_sidebar(df)
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             # KPIs
             c1, c2, c3, c4 = st.columns(4)
             with c1:
@@ -588,6 +618,8 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de keywords.")
         else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             st.subheader("Top Keywords por Custo")
             df_kw = df.groupby('keyword').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum',
@@ -611,6 +643,8 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados demograficos.")
         else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             st.subheader("Performance por Faixa Etaria")
             df_age = df[df['tipo'] == 'faixa_etaria'].groupby('segmento').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -633,6 +667,8 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados geograficos.")
         else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             st.subheader("Top Cidades por Investimento")
             df_geo = df.groupby('cidade').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -648,6 +684,8 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de dispositivos.")
         else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             st.subheader("Performance por Dispositivo")
             df_dev = df.groupby('dispositivo').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -657,6 +695,82 @@ def pagina_google_ads():
                              color_discrete_sequence=[ACCENT, ACCENT2, COR_VERDE, COR_AMARELO])
                 render_chart(fig, key="ga_dev")
             render_explicacao(EXPLICACOES['google_ads']['dispositivos'])
+
+    with tab6:
+        df = dados.get('search_terms', pd.DataFrame())
+        if df.empty:
+            df = carregar_csv("Google_Ads/search_terms.csv")
+        if df.empty:
+            st.info("Sem dados de search terms.")
+        else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
+            st.subheader("Top 50 Termos de Busca")
+            col_termo = 'termo_busca' if 'termo_busca' in df.columns else 'search_term'
+            col_imp = 'impressoes' if 'impressoes' in df.columns else 'impressions'
+            col_cli = 'cliques' if 'cliques' in df.columns else 'clicks'
+            col_custo = 'custo' if 'custo' in df.columns else 'cost'
+            col_conv = 'conversoes' if 'conversoes' in df.columns else 'conversions'
+            col_ctr = 'ctr' if 'ctr' in df.columns else None
+
+            agg_cols = {}
+            for c in [col_imp, col_cli, col_custo, col_conv]:
+                if c in df.columns:
+                    agg_cols[c] = 'sum'
+            if col_ctr and col_ctr in df.columns:
+                agg_cols[col_ctr] = 'mean'
+
+            if col_termo in df.columns and agg_cols:
+                df_st = df.groupby(col_termo).agg(agg_cols).reset_index()
+                # Recalcular CTR se temos impressoes e cliques
+                if col_imp in df_st.columns and col_cli in df_st.columns:
+                    df_st['ctr_calc'] = np.where(df_st[col_imp] > 0,
+                                                  df_st[col_cli] / df_st[col_imp] * 100, 0)
+                df_st = df_st.sort_values(col_custo if col_custo in df_st.columns else col_imp,
+                                           ascending=False).head(50)
+                st.dataframe(df_st, use_container_width=True)
+            else:
+                st.dataframe(df.head(50), use_container_width=True)
+            render_explicacao(EXPLICACOES['google_ads']['search_terms'])
+
+    with tab7:
+        df = dados.get('hora_dia', pd.DataFrame())
+        if df.empty:
+            df = carregar_csv("Google_Ads/hora_dia.csv")
+        if df.empty:
+            st.info("Sem dados de hora/dia.")
+        else:
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
+            st.subheader("Heatmap — Performance por Hora x Dia da Semana")
+
+            col_hora = 'hora' if 'hora' in df.columns else 'hour'
+            col_dia = 'dia_semana' if 'dia_semana' in df.columns else 'day_of_week'
+            col_metrica = None
+            for c in ['conversoes', 'conversions', 'cliques', 'clicks', 'impressoes', 'impressions']:
+                if c in df.columns:
+                    col_metrica = c
+                    break
+
+            if col_hora in df.columns and col_dia in df.columns and col_metrica:
+                pivot = df.pivot_table(index=col_hora, columns=col_dia, values=col_metrica,
+                                        aggfunc='sum', fill_value=0)
+                # Reordenar dias se possivel
+                dias_ordem = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                dias_pt = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo']
+                cols_existentes = [d for d in dias_ordem + dias_pt if d in pivot.columns]
+                if cols_existentes:
+                    pivot = pivot[cols_existentes]
+
+                fig = px.imshow(pivot, text_auto=True, aspect='auto',
+                                color_continuous_scale='YlOrRd',
+                                labels=dict(x='Dia da Semana', y='Hora', color=col_metrica.capitalize()))
+                fig.update_layout(xaxis_title='Dia da Semana', yaxis_title='Hora')
+                render_chart(fig, key="ga_hora_dia")
+            else:
+                st.info("Dados de hora/dia nao possuem as colunas esperadas (hora, dia_semana).")
+                st.dataframe(df.head(20), use_container_width=True)
+            render_explicacao(EXPLICACOES['google_ads']['hora_dia'])
 
 
 # =============================================================================
@@ -678,6 +792,8 @@ def pagina_meta_ads():
             st.info("Sem dados de campanhas.")
         else:
             df = filtro_periodo_sidebar(df)
+            if 'shopping' in df.columns:
+                df = filtro_shopping_sidebar(df)
             c1, c2, c3, c4 = st.columns(4)
             with c1:
                 render_kpi("Investimento", df['custo'].sum(), "moeda")
@@ -863,7 +979,9 @@ def pagina_tiktok_ads():
 def pagina_ga4_search_console():
     st.title("GA4 / Search Console")
 
-    tab1, tab2, tab3 = st.tabs(["Fontes de Trafego", "Landing Pages", "Consultas Organicas"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "Fontes de Trafego", "Landing Pages", "Consultas Organicas", "Dispositivos", "Geografico"
+    ])
 
     with tab1:
         df = carregar_csv("GA4/sessoes_por_fonte.csv")
@@ -930,6 +1048,48 @@ def pagina_ga4_search_console():
                                  .sort_values('impressoes', ascending=False).head(20),
                                  use_container_width=True)
                     render_explicacao(EXPLICACOES['ga4']['oportunidades'])
+
+    with tab4:
+        df = carregar_csv("GA4/dispositivos.csv")
+        if df.empty:
+            st.info("Sem dados de dispositivos GA4.")
+        else:
+            st.subheader("Sessoes por Dispositivo")
+            col_device = 'deviceCategory' if 'deviceCategory' in df.columns else 'dispositivo'
+            col_sessions = 'sessions' if 'sessions' in df.columns else 'sessoes'
+
+            if col_device in df.columns and col_sessions in df.columns:
+                df_dev = df.groupby(col_device)[col_sessions].sum().reset_index()
+                fig = px.pie(df_dev, values=col_sessions, names=col_device, hole=0.4,
+                             color_discrete_sequence=['#E37400', '#F9AB00', '#34A853', '#4285F4'])
+                fig.update_traces(textinfo='label+percent', textposition='outside')
+                render_chart(fig, key="ga4_dispositivos")
+            else:
+                st.info("Colunas esperadas nao encontradas nos dados de dispositivos.")
+                st.dataframe(df.head(20), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['dispositivos'])
+
+    with tab5:
+        df = carregar_csv("GA4/geografico.csv")
+        if df.empty:
+            st.info("Sem dados geograficos GA4.")
+        else:
+            st.subheader("Top 20 Cidades por Sessoes")
+            col_city = 'city' if 'city' in df.columns else 'cidade'
+            col_sessions = 'sessions' if 'sessions' in df.columns else 'sessoes'
+
+            if col_city in df.columns and col_sessions in df.columns:
+                df_geo = df.groupby(col_city)[col_sessions].sum().reset_index()
+                df_geo = df_geo.sort_values(col_sessions, ascending=False).head(20)
+                fig = px.bar(df_geo, x=col_sessions, y=col_city, orientation='h',
+                             color_discrete_sequence=['#E37400'])
+                fig.update_layout(yaxis={'categoryorder': 'total ascending'},
+                                  xaxis_title='Sessoes', yaxis_title='Cidade')
+                render_chart(fig, key="ga4_geografico")
+            else:
+                st.info("Colunas esperadas nao encontradas nos dados geograficos.")
+                st.dataframe(df.head(20), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['geografico'])
 
 
 # =============================================================================
