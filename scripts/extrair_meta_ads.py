@@ -83,11 +83,17 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
     try:
         insights = account.get_insights(fields=fields, params=params)
     except Exception as e:
-        print(f"  [Meta Ads] Erro em {nome_arquivo}: {e}")
+        print(f"  [Meta Ads] Erro ao buscar {nome_arquivo}: {e}")
         return pd.DataFrame()
 
     data = []
-    for row in insights:
+    try:
+        rows_list = list(insights)
+    except Exception as e:
+        print(f"  [Meta Ads] Erro ao paginar {nome_arquivo}: {e}")
+        return pd.DataFrame()
+
+    for row in rows_list:
         row_dict = dict(row)
 
         # Deserializar actions[] para colunas individuais
