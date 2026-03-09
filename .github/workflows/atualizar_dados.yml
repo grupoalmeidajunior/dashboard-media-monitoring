@@ -113,6 +113,7 @@ jobs:
           git commit -m "data: atualizacao automatica midia - $DATA_HORA
 
           Co-Authored-By: GitHub Actions <actions@github.com>"
+          git pull --rebase origin main || true
           git push origin main
 
   # Job de notificacao WhatsApp (roda no self-hosted onde esta o gateway)
