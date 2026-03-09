@@ -17,6 +17,7 @@ import json
 import argparse
 from datetime import datetime, timedelta
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 import pandas as pd
 
@@ -58,6 +59,20 @@ def init_api():
     return {sigla: AdAccount(act_id) for sigla, act_id in config.items()}
 
 
+TIMEOUT_POR_CONTA = 300  # 5 minutos max por conta/tipo
+
+
+def _fetch_insights_with_timeout(account, fields, params, timeout=TIMEOUT_POR_CONTA):
+    """Executa get_insights + paginacao com timeout."""
+    def _fetch():
+        insights = account.get_insights(fields=fields, params=params)
+        return list(insights)
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(_fetch)
+        return future.result(timeout=timeout)
+
+
 def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arquivo="campanhas", shopping=""):
     """Extrai insights generico com breakdowns opcionais."""
     fields = [
@@ -81,17 +96,15 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
         params['breakdowns'] = breakdowns
 
     try:
-        insights = account.get_insights(fields=fields, params=params)
+        rows_list = _fetch_insights_with_timeout(account, fields, params)
+    except FuturesTimeoutError:
+        print(f"  [Meta Ads] TIMEOUT ({TIMEOUT_POR_CONTA}s) ao buscar {nome_arquivo} para {shopping}")
+        return pd.DataFrame()
     except Exception as e:
         print(f"  [Meta Ads] Erro ao buscar {nome_arquivo}: {e}")
         return pd.DataFrame()
 
     data = []
-    try:
-        rows_list = list(insights)
-    except Exception as e:
-        print(f"  [Meta Ads] Erro ao paginar {nome_arquivo}: {e}")
-        return pd.DataFrame()
 
     for row in rows_list:
         row_dict = dict(row)
