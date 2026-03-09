@@ -346,7 +346,7 @@ def filtro_periodo_sidebar(df, col_data='data'):
     return df[(df[col_data] >= inicio) & (df[col_data] <= data_max)]
 
 
-def filtro_shopping_sidebar(df, col='shopping'):
+def filtro_shopping_sidebar(df, col='shopping', key='shopping_filter'):
     """Adiciona filtro de shopping no sidebar e retorna df filtrado."""
     if df.empty or col not in df.columns:
         return df
@@ -356,9 +356,16 @@ def filtro_shopping_sidebar(df, col='shopping'):
         return df
 
     opcoes = ["Todos"] + shoppings
-    shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0)
+    shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key=key)
 
     if shopping_sel != "Todos":
+        return df[df[col] == shopping_sel]
+    return df
+
+
+def _aplicar_filtro_shopping(df, shopping_sel, col='shopping'):
+    """Aplica filtro de shopping ja selecionado (sem criar widget)."""
+    if shopping_sel and shopping_sel != "Todos" and col in df.columns:
         return df[df[col] == shopping_sel]
     return df
 
@@ -380,7 +387,7 @@ def pagina_resumo_executivo():
     # Usar dados com shopping se disponiveis, senao fallback
     if not df_shopping.empty and 'shopping' in df_shopping.columns:
         df = filtro_periodo_sidebar(df_shopping)
-        df = filtro_shopping_sidebar(df)
+        df = filtro_shopping_sidebar(df, key="resumo_shopping")
     else:
         df = filtro_periodo_sidebar(df_diario)
 
@@ -570,6 +577,15 @@ def pagina_google_ads():
         st.info("Sem dados do Google Ads. Execute `scripts/extrair_google_ads.py`.")
         return
 
+    # Filtro shopping unico (antes dos tabs) usando campanhas como referencia
+    df_ref = dados.get('campanhas', pd.DataFrame())
+    shopping_sel = None
+    if not df_ref.empty and 'shopping' in df_ref.columns:
+        shoppings = sorted(df_ref['shopping'].dropna().unique().tolist())
+        if shoppings:
+            opcoes = ["Todos"] + shoppings
+            shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key="gads_shopping")
+
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "Campanhas", "Palavras-Chave", "Demografico", "Geografico", "Dispositivos",
         "Search Terms", "Hora / Dia"
@@ -581,8 +597,7 @@ def pagina_google_ads():
             st.info("Sem dados de campanhas.")
         else:
             df = filtro_periodo_sidebar(df)
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             # KPIs
             c1, c2, c3, c4 = st.columns(4)
             with c1:
@@ -618,8 +633,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de keywords.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Top Keywords por Custo")
             df_kw = df.groupby('keyword').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum',
@@ -643,8 +657,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados demograficos.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Performance por Faixa Etaria")
             df_age = df[df['tipo'] == 'faixa_etaria'].groupby('segmento').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -667,8 +680,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados geograficos.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Top Cidades por Investimento")
             df_geo = df.groupby('cidade').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -684,8 +696,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de dispositivos.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Performance por Dispositivo")
             df_dev = df.groupby('dispositivo').agg({
                 'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum', 'conversoes': 'sum'
@@ -703,8 +714,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de search terms.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Top 50 Termos de Busca")
             col_termo = 'termo_busca' if 'termo_busca' in df.columns else 'search_term'
             col_imp = 'impressoes' if 'impressoes' in df.columns else 'impressions'
@@ -740,8 +750,7 @@ def pagina_google_ads():
         if df.empty:
             st.info("Sem dados de hora/dia.")
         else:
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Heatmap — Performance por Hora x Dia da Semana")
 
             col_hora = 'hora' if 'hora' in df.columns else 'hour'
@@ -784,6 +793,15 @@ def pagina_meta_ads():
         st.info("Sem dados do Meta Ads. Execute `scripts/extrair_meta_ads.py`.")
         return
 
+    # Filtro shopping unico (antes dos tabs)
+    df_ref = dados.get('campanhas', pd.DataFrame())
+    meta_shopping_sel = None
+    if not df_ref.empty and 'shopping' in df_ref.columns:
+        shoppings = sorted(df_ref['shopping'].dropna().unique().tolist())
+        if shoppings:
+            opcoes = ["Todos"] + shoppings
+            meta_shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key="meta_shopping")
+
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Campanhas", "Plataformas", "Posicionamento", "Video", "Demografico"])
 
     with tab1:
@@ -792,8 +810,7 @@ def pagina_meta_ads():
             st.info("Sem dados de campanhas.")
         else:
             df = filtro_periodo_sidebar(df)
-            if 'shopping' in df.columns:
-                df = filtro_shopping_sidebar(df)
+            df = _aplicar_filtro_shopping(df, meta_shopping_sel)
             c1, c2, c3, c4 = st.columns(4)
             with c1:
                 render_kpi("Investimento", df['custo'].sum(), "moeda")
