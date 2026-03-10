@@ -103,8 +103,9 @@ def extrair_instagram_posts(ig_id, sigla, data_inicio_ts, data_fim_ts):
         shares = 0
 
         try:
+            # v22.0+: impressions depreciado para media, usar reach/saved/shares
             insights_data = api_get(f"{post['id']}/insights", {
-                "metric": "reach,impressions,saved,shares"
+                "metric": "reach,saved,shares"
             })
             for metric in insights_data:
                 name = metric.get("name", "")
@@ -112,13 +113,11 @@ def extrair_instagram_posts(ig_id, sigla, data_inicio_ts, data_fim_ts):
                 val = values[0].get("value", 0) if values else 0
                 if name == "reach":
                     reach = val
-                elif name == "impressions":
-                    impressions = val
                 elif name == "saved":
                     saved = val
                 elif name == "shares":
                     shares = val
-        except Exception as e:
+        except Exception:
             pass  # Alguns posts antigos nao tem insights
 
         data.append({
@@ -154,7 +153,7 @@ def extrair_instagram_stories_insights(ig_id, sigla):
 
         try:
             insights_data = api_get(f"{story['id']}/insights", {
-                "metric": "reach,impressions,replies"
+                "metric": "reach,replies"
             })
             for metric in insights_data:
                 name = metric.get("name", "")
@@ -162,8 +161,6 @@ def extrair_instagram_stories_insights(ig_id, sigla):
                 val = values[0].get("value", 0) if values else 0
                 if name == "reach":
                     reach = val
-                elif name == "impressions":
-                    impressions = val
                 elif name == "replies":
                     replies = val
         except Exception:
@@ -187,15 +184,41 @@ def extrair_instagram_stories_insights(ig_id, sigla):
     return data
 
 
+def obter_page_token(page_id):
+    """Obtem Page Access Token via System User token."""
+    url = f"{BASE_URL}/{page_id}"
+    params = {"access_token": TOKEN, "fields": "access_token"}
+    resp = requests.get(url, params=params)
+    if resp.status_code == 200:
+        return resp.json().get("access_token", TOKEN)
+    return TOKEN
+
+
 def extrair_facebook_posts(page_id, sigla, data_inicio, data_fim):
     """Extrai posts da Facebook Page."""
+    page_token = obter_page_token(page_id)
+
     fields = "id,message,created_time,type,shares,reactions.summary(true),comments.summary(true)"
-    posts = api_get(f"{page_id}/published_posts", {
+    url = f"{BASE_URL}/{page_id}/published_posts"
+    params = {
+        "access_token": page_token,
         "fields": fields,
         "since": data_inicio,
         "until": data_fim,
         "limit": 100,
-    })
+    }
+    all_data = []
+    while url:
+        resp = requests.get(url, params=params)
+        if resp.status_code != 200:
+            print(f"  [Organico] Erro FB posts {sigla}: {resp.status_code} - {resp.text[:200]}")
+            break
+        data = resp.json()
+        all_data.extend(data.get("data", []))
+        url = data.get("paging", {}).get("next")
+        params = {}
+
+    posts = all_data
 
     data = []
     for post in posts:
@@ -220,21 +243,24 @@ def extrair_facebook_posts(page_id, sigla, data_inicio, data_fim):
         comments = post.get("comments", {}).get("summary", {}).get("total_count", 0)
         shares = post.get("shares", {}).get("count", 0)
 
-        # Buscar insights do post
+        # Buscar insights do post (usando page_token)
         reach = 0
         impressions = 0
         try:
-            insights_data = api_get(f"{post['id']}/insights", {
+            url_ins = f"{BASE_URL}/{post['id']}/insights"
+            resp_ins = requests.get(url_ins, params={
+                "access_token": page_token,
                 "metric": "post_impressions,post_impressions_unique"
             })
-            for metric in insights_data:
-                name = metric.get("name", "")
-                values = metric.get("values", [{}])
-                val = values[0].get("value", 0) if values else 0
-                if name == "post_impressions":
-                    impressions = val
-                elif name == "post_impressions_unique":
-                    reach = val
+            if resp_ins.status_code == 200:
+                for metric in resp_ins.json().get("data", []):
+                    name = metric.get("name", "")
+                    values = metric.get("values", [{}])
+                    val = values[0].get("value", 0) if values else 0
+                    if name == "post_impressions":
+                        impressions = val
+                    elif name == "post_impressions_unique":
+                        reach = val
         except Exception:
             pass
 
@@ -262,7 +288,7 @@ def extrair_instagram_account_insights(ig_id, sigla, data_inicio, data_fim):
 
     # Metricas diarias da conta
     try:
-        metrics = "reach,impressions,profile_views,follower_count"
+        metrics = "reach,follower_count,profile_views,accounts_engaged"
         url = f"{BASE_URL}/{ig_id}/insights"
         params = {
             "access_token": TOKEN,
