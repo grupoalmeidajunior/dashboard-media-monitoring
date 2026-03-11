@@ -96,7 +96,7 @@ def _fetch_insights_with_timeout(account, fields, params, timeout=TIMEOUT_POR_CO
             return future.result(timeout=timeout)
 
 
-def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arquivo="campanhas", shopping=""):
+def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arquivo="campanhas", shopping="", time_increment=1):
     """Extrai insights generico com breakdowns opcionais."""
     fields = [
         'campaign_name', 'campaign_id', 'objective',
@@ -111,7 +111,7 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
 
     params = {
         'time_range': {'since': data_inicio, 'until': data_fim},
-        'time_increment': 1,  # diario
+        'time_increment': time_increment,
         'level': 'campaign',
         'filtering': [{'field': 'campaign.delivery_info', 'operator': 'IN', 'value': ['active', 'completed', 'inactive']}],
     }
@@ -190,26 +190,28 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
 
 def extrair_todas_contas(accounts, data_inicio, data_fim):
     """Extrai insights de todas as contas e consolida por tipo de CSV."""
+    # time_increment: 1=diario (pesado), 'monthly'=mensal (leve)
+    # Breakdowns pesados usam mensal para reduzir volume (8 contas × 90 dias)
     tipos_extracao = [
-        {"nome": "campanhas", "breakdowns": None},
-        {"nome": "plataforma", "breakdowns": ['publisher_platform']},
-        {"nome": "posicionamento", "breakdowns": ['publisher_platform', 'platform_position']},
-        {"nome": "demografico_idade", "breakdowns": ['age']},
-        {"nome": "demografico_genero", "breakdowns": ['gender']},
-        {"nome": "demografico_cruzado", "breakdowns": ['age', 'gender']},
-        {"nome": "dispositivo", "breakdowns": ['device_platform']},
-        {"nome": "video", "breakdowns": None},
+        {"nome": "campanhas", "breakdowns": None, "increment": 1},
+        {"nome": "plataforma", "breakdowns": ['publisher_platform'], "increment": 'monthly'},
+        {"nome": "posicionamento", "breakdowns": ['publisher_platform', 'platform_position'], "increment": 'monthly'},
+        {"nome": "demografico_idade", "breakdowns": ['age'], "increment": 'monthly'},
+        {"nome": "demografico_genero", "breakdowns": ['gender'], "increment": 'monthly'},
+        {"nome": "dispositivo", "breakdowns": ['device_platform'], "increment": 'monthly'},
+        {"nome": "video", "breakdowns": None, "increment": 1},
     ]
 
     for tipo in tipos_extracao:
         dfs = []
         for sigla, account in accounts.items():
-            print(f"  [Meta Ads] {sigla} → {tipo['nome']}...")
+            print(f"  [Meta Ads] {sigla} → {tipo['nome']} (inc={tipo['increment']})...")
             df = extrair_insights(
                 account, data_inicio, data_fim,
                 breakdowns=tipo['breakdowns'],
                 nome_arquivo=tipo['nome'],
                 shopping=sigla,
+                time_increment=tipo['increment'],
             )
             if not df.empty:
                 dfs.append(df)

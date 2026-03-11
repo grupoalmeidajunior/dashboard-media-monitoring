@@ -317,7 +317,9 @@ def extrair_search_terms(client, customer_id, shopping_sigla, data_inicio, data_
 
 
 def extrair_alcance_frequencia(client, customer_id, shopping_sigla, data_inicio, data_fim):
-    """Extrai alcance (unique_users) e frequencia para campanhas Display/Video/Demand Gen."""
+    """Extrai alcance (unique_users) e frequencia para todas as campanhas nao-Search."""
+    # Sem filtro de channel_type na query — filtramos no Python para capturar
+    # DEMAND_GEN, VIDEO, DISPLAY, PERFORMANCE_MAX, MULTI_CHANNEL, etc.
     query = f"""
         SELECT
             campaign.id, campaign.name, campaign.advertising_channel_type,
@@ -328,14 +330,14 @@ def extrair_alcance_frequencia(client, customer_id, shopping_sigla, data_inicio,
         FROM campaign
         WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
             AND campaign.status != 'REMOVED'
-            AND campaign.advertising_channel_type IN ('DISPLAY', 'VIDEO', 'DISCOVERY', 'DEMAND_GEN')
+            AND campaign.advertising_channel_type != 'SEARCH'
     """
     rows = query_google_ads(client, customer_id, query)
     data = []
     for r in rows:
         unique = r.metrics.unique_users
         freq = r.metrics.average_impression_frequency_per_user
-        # Pular linhas sem dados de alcance (abaixo do threshold de 10k impressoes)
+        # Pular linhas sem dados de alcance
         if unique == 0 and freq == 0:
             continue
         data.append({
