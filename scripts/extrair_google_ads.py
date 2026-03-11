@@ -316,6 +316,45 @@ def extrair_search_terms(client, customer_id, shopping_sigla, data_inicio, data_
     return data
 
 
+def extrair_alcance_frequencia(client, customer_id, shopping_sigla, data_inicio, data_fim):
+    """Extrai alcance (unique_users) e frequencia para campanhas Display/Video/Demand Gen."""
+    query = f"""
+        SELECT
+            campaign.id, campaign.name, campaign.advertising_channel_type,
+            segments.date,
+            metrics.impressions, metrics.unique_users,
+            metrics.average_impression_frequency_per_user,
+            metrics.cost_micros, metrics.clicks, metrics.conversions
+        FROM campaign
+        WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
+            AND campaign.status != 'REMOVED'
+            AND campaign.advertising_channel_type IN ('DISPLAY', 'VIDEO', 'DISCOVERY', 'DEMAND_GEN')
+    """
+    rows = query_google_ads(client, customer_id, query)
+    data = []
+    for r in rows:
+        unique = r.metrics.unique_users
+        freq = r.metrics.average_impression_frequency_per_user
+        # Pular linhas sem dados de alcance (abaixo do threshold de 10k impressoes)
+        if unique == 0 and freq == 0:
+            continue
+        data.append({
+            'shopping': SHOPPING_NOMES.get(shopping_sigla, shopping_sigla),
+            'shopping_sigla': shopping_sigla,
+            'campanha_id': r.campaign.id,
+            'campanha': r.campaign.name,
+            'tipo_canal': r.campaign.advertising_channel_type.name,
+            'data': r.segments.date,
+            'impressoes': r.metrics.impressions,
+            'alcance': unique,
+            'frequencia': freq,
+            'custo': r.metrics.cost_micros / 1_000_000,
+            'cliques': r.metrics.clicks,
+            'conversoes': r.metrics.conversions,
+        })
+    return data
+
+
 def extrair_hora_dia(client, customer_id, shopping_sigla, data_inicio, data_fim):
     query = f"""
         SELECT
@@ -366,6 +405,7 @@ def main():
         'diario': extrair_diario,
         'search_terms': extrair_search_terms,
         'hora_dia': extrair_hora_dia,
+        'alcance_frequencia': extrair_alcance_frequencia,
     }
 
     for nome_csv, func_extrair in extratores.items():

@@ -288,6 +288,14 @@ ALERTAS_SATURACAO = {
 }
 
 
+# --- ALCANCE E FREQUENCIA ---
+GOOGLE_ALCANCE_FREQUENCIA = {
+    'o_que_mostra': 'Alcance (pessoas unicas atingidas) e frequencia media (vezes que cada pessoa viu o anuncio) para campanhas Display, Video e Demand Gen.',
+    'como_interpretar': 'Frequencia ideal fica entre 2 e 5. Abaixo de 2, o publico pode nao lembrar da marca. Acima de 7, ha fadiga de anuncio — o custo por conversao tende a subir. Alcance crescente com frequencia estavel indica expansao saudavel.',
+    'o_que_fazer': 'Se a frequencia esta alta (>5), amplie o publico-alvo ou renove os criativos. Se o alcance esta baixo, aumente o orcamento ou revise a segmentacao. Compare alcance vs conversoes para identificar o ponto otimo de frequencia.',
+}
+
+
 # --- ORGANICO ---
 ORGANICO_VOLUME = {
     'o_que_mostra': 'Volume total de publicacoes organicas por plataforma (Instagram e Facebook), separado por tipo (Imagem, Video, Reel, Carrossel, Story).',
@@ -334,6 +342,7 @@ EXPLICACOES = {
         'dispositivos': GOOGLE_DISPOSITIVOS,
         'search_terms': GOOGLE_SEARCH_TERMS,
         'hora_dia': GOOGLE_HORA_DIA,
+        'alcance_frequencia': GOOGLE_ALCANCE_FREQUENCIA,
     },
     'meta_ads': {
         'campanhas': META_CAMPANHAS,

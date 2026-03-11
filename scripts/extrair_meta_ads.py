@@ -15,6 +15,7 @@ import os
 import sys
 import json
 import argparse
+import signal
 from datetime import datetime, timedelta
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
@@ -59,18 +60,40 @@ def init_api():
     return {sigla: AdAccount(act_id) for sigla, act_id in config.items()}
 
 
-TIMEOUT_POR_CONTA = 300  # 5 minutos max por conta/tipo
+TIMEOUT_POR_CONTA = 120  # 2 minutos max por conta/tipo
+
+
+class TimeoutException(Exception):
+    pass
 
 
 def _fetch_insights_with_timeout(account, fields, params, timeout=TIMEOUT_POR_CONTA):
-    """Executa get_insights + paginacao com timeout."""
+    """Executa get_insights + paginacao com timeout via signal (Linux) ou ThreadPool (Windows)."""
     def _fetch():
         insights = account.get_insights(fields=fields, params=params)
         return list(insights)
 
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(_fetch)
-        return future.result(timeout=timeout)
+    # signal.alarm so funciona em Linux (GitHub Actions)
+    if hasattr(signal, 'SIGALRM'):
+        def _handler(signum, frame):
+            raise TimeoutException(f"Timeout ({timeout}s)")
+
+        old_handler = signal.signal(signal.SIGALRM, _handler)
+        signal.alarm(timeout)
+        try:
+            result = _fetch()
+            signal.alarm(0)
+            return result
+        except TimeoutException:
+            raise FuturesTimeoutError(f"Timeout ({timeout}s)")
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
+    else:
+        # Fallback Windows
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_fetch)
+            return future.result(timeout=timeout)
 
 
 def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arquivo="campanhas", shopping=""):

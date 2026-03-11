@@ -586,9 +586,9 @@ def pagina_google_ads():
             opcoes = ["Todos"] + shoppings
             shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key="gads_shopping")
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
         "Campanhas", "Palavras-Chave", "Demografico", "Geografico", "Dispositivos",
-        "Search Terms", "Hora / Dia"
+        "Search Terms", "Hora / Dia", "Alcance / Frequencia"
     ])
 
     with tab1:
@@ -780,6 +780,103 @@ def pagina_google_ads():
                 st.info("Dados de hora/dia nao possuem as colunas esperadas (hora, dia_semana).")
                 st.dataframe(df.head(20), use_container_width=True)
             render_explicacao(EXPLICACOES['google_ads']['hora_dia'])
+
+    with tab8:
+        df = dados.get('alcance_frequencia', pd.DataFrame())
+        if df.empty:
+            df = carregar_csv("Google_Ads/alcance_frequencia.csv")
+        if df.empty:
+            st.info("Sem dados de alcance e frequencia. Disponivel apenas para campanhas Display, Video e Demand Gen com 10k+ impressoes.")
+        else:
+            df = filtro_periodo_sidebar(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel)
+
+            # KPIs
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                render_kpi("Alcance Total", df['alcance'].sum(), "inteiro")
+            with c2:
+                alcance_t = df.groupby('data')['alcance'].sum()
+                freq_media = df['frequencia'].mean() if not df.empty else 0
+                render_kpi("Frequencia Media", freq_media, "decimal")
+            with c3:
+                render_kpi("Impressoes", df['impressoes'].sum(), "inteiro")
+            with c4:
+                render_kpi("Investimento", df['custo'].sum(), "moeda")
+
+            st.markdown("---")
+
+            # Evolucao alcance e frequencia diaria
+            st.subheader("Evolucao Diaria — Alcance e Frequencia")
+            if 'data' in df.columns:
+                df_daily = df.groupby('data').agg({
+                    'alcance': 'sum', 'frequencia': 'mean', 'impressoes': 'sum'
+                }).reset_index()
+                df_daily = df_daily.sort_values('data')
+
+                fig = go.Figure()
+                fig.add_trace(go.Bar(x=df_daily['data'], y=df_daily['alcance'],
+                                      name='Alcance (pessoas)', marker_color=ACCENT,
+                                      yaxis='y'))
+                fig.add_trace(go.Scatter(x=df_daily['data'], y=df_daily['frequencia'],
+                                          name='Frequencia Media', mode='lines+markers',
+                                          marker_color='#FF6B6B', line_width=2,
+                                          yaxis='y2'))
+                fig.update_layout(
+                    yaxis=dict(title='Alcance (pessoas)', side='left'),
+                    yaxis2=dict(title='Frequencia Media', side='right', overlaying='y'),
+                    legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
+                    hovermode='x unified',
+                )
+                render_chart(fig, key="ga_reach_daily")
+
+            # Por campanha
+            st.subheader("Alcance por Campanha")
+            df_camp = df.groupby('campanha').agg({
+                'alcance': 'sum', 'impressoes': 'sum', 'frequencia': 'mean',
+                'custo': 'sum', 'cliques': 'sum', 'conversoes': 'sum'
+            }).reset_index()
+            df_camp['cpm_alcance'] = np.where(df_camp['alcance'] > 0,
+                                                df_camp['custo'] / df_camp['alcance'] * 1000, 0)
+            df_camp = df_camp.sort_values('alcance', ascending=False)
+
+            c1, c2 = st.columns(2)
+            with c1:
+                fig = px.bar(df_camp, x='alcance', y='campanha', orientation='h',
+                             color_discrete_sequence=[ACCENT],
+                             title="Alcance por Campanha")
+                fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                render_chart(fig, key="ga_reach_camp")
+            with c2:
+                fig = px.bar(df_camp, x='frequencia', y='campanha', orientation='h',
+                             color_discrete_sequence=['#FF6B6B'],
+                             title="Frequencia Media por Campanha")
+                fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                render_chart(fig, key="ga_freq_camp")
+
+            # Tabela detalhada
+            st.subheader("Tabela Detalhada")
+            st.dataframe(df_camp.rename(columns={
+                'campanha': 'Campanha', 'alcance': 'Alcance', 'impressoes': 'Impressoes',
+                'frequencia': 'Freq. Media', 'custo': 'Investimento', 'cliques': 'Cliques',
+                'conversoes': 'Conversoes', 'cpm_alcance': 'CPM Alcance'
+            }).style.format({
+                'Investimento': 'R$ {:.2f}', 'Freq. Media': '{:.1f}',
+                'CPM Alcance': 'R$ {:.2f}'
+            }), use_container_width=True)
+
+            # Por tipo de canal
+            if 'tipo_canal' in df.columns and df['tipo_canal'].nunique() > 1:
+                st.subheader("Alcance por Tipo de Campanha")
+                df_tipo = df.groupby('tipo_canal').agg({
+                    'alcance': 'sum', 'frequencia': 'mean', 'custo': 'sum'
+                }).reset_index()
+                fig = px.bar(df_tipo, x='tipo_canal', y='alcance', color='tipo_canal',
+                             text='alcance', title="Alcance por Tipo de Canal")
+                fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+                render_chart(fig, key="ga_reach_tipo")
+
+            render_explicacao(EXPLICACOES['google_ads']['alcance_frequencia'])
 
 
 # =============================================================================
