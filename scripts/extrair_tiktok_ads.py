@@ -240,7 +240,7 @@ def fetch_hourly_report(token, advertiser_id, data_inicio, data_fim, metrics, sh
 
 def main():
     parser = argparse.ArgumentParser(description="Extrator TikTok Ads (Multi-Shopping)")
-    parser.add_argument("--dias", type=int, default=90, help="Dias para extrair (default 90)")
+    parser.add_argument("--dias", type=int, default=365, help="Dias para extrair (default 365)")
     args = parser.parse_args()
 
     data_fim = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
