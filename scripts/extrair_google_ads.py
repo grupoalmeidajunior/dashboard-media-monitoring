@@ -1,6 +1,6 @@
 """
 Extrator Google Ads API v23 — Multi-Customer (1 MCC, N contas)
-Gera 6 CSVs em Dados/Google_Ads/ (todos com coluna 'shopping')
+Gera 12 CSVs em Dados/Google_Ads/ (todos com coluna 'shopping')
 
 Requer:
   - google-ads>=24.0.0
@@ -82,6 +82,7 @@ def extrair_campanhas(client, customer_id, shopping_sigla, data_inicio, data_fim
     query = f"""
         SELECT
             campaign.id, campaign.name, campaign.status, campaign.advertising_channel_type,
+            campaign.bidding_strategy_type,
             segments.date,
             metrics.impressions, metrics.clicks, metrics.ctr, metrics.average_cpc,
             metrics.cost_micros, metrics.conversions, metrics.conversions_value,
@@ -105,6 +106,7 @@ def extrair_campanhas(client, customer_id, shopping_sigla, data_inicio, data_fim
             'campanha': r.campaign.name,
             'status': r.campaign.status.name,
             'tipo_canal': r.campaign.advertising_channel_type.name,
+            'estrategia_lance': r.campaign.bidding_strategy_type.name if r.campaign.bidding_strategy_type else '',
             'data': r.segments.date,
             'impressoes': r.metrics.impressions,
             'cliques': r.metrics.clicks,
@@ -130,6 +132,9 @@ def extrair_keywords(client, customer_id, shopping_sigla, data_inicio, data_fim)
             ad_group.name, ad_group_criterion.keyword.text,
             ad_group_criterion.keyword.match_type,
             ad_group_criterion.quality_info.quality_score,
+            ad_group_criterion.quality_info.creative_quality_score,
+            ad_group_criterion.quality_info.post_click_quality_score,
+            ad_group_criterion.quality_info.search_predicted_ctr,
             segments.date,
             metrics.impressions, metrics.clicks, metrics.ctr,
             metrics.average_cpc, metrics.cost_micros,
@@ -142,6 +147,7 @@ def extrair_keywords(client, customer_id, shopping_sigla, data_inicio, data_fim)
     data = []
     for r in rows:
         qs = r.ad_group_criterion.quality_info.quality_score
+        qi = r.ad_group_criterion.quality_info
         data.append({
             'shopping': SHOPPING_NOMES.get(shopping_sigla, shopping_sigla),
             'shopping_sigla': shopping_sigla,
@@ -149,6 +155,9 @@ def extrair_keywords(client, customer_id, shopping_sigla, data_inicio, data_fim)
             'keyword': r.ad_group_criterion.keyword.text,
             'match_type': r.ad_group_criterion.keyword.match_type.name,
             'quality_score': qs if qs > 0 else None,
+            'qualidade_criativo': qi.creative_quality_score.name if qi.creative_quality_score else '',
+            'qualidade_landing': qi.post_click_quality_score.name if qi.post_click_quality_score else '',
+            'ctr_esperado': qi.search_predicted_ctr.name if qi.search_predicted_ctr else '',
             'data': r.segments.date,
             'impressoes': r.metrics.impressions,
             'cliques': r.metrics.clicks,
@@ -385,6 +394,106 @@ def extrair_hora_dia(client, customer_id, shopping_sigla, data_inicio, data_fim)
     return data
 
 
+def extrair_ad_groups(client, customer_id, shopping_sigla, data_inicio, data_fim):
+    """Extrai performance por ad group."""
+    query = f"""
+        SELECT
+            campaign.name, ad_group.id, ad_group.name, ad_group.status,
+            segments.date,
+            metrics.impressions, metrics.clicks, metrics.ctr,
+            metrics.average_cpc, metrics.cost_micros,
+            metrics.conversions, metrics.conversions_value,
+            metrics.cost_per_conversion
+        FROM ad_group
+        WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
+            AND campaign.status != 'REMOVED'
+            AND ad_group.status != 'REMOVED'
+        ORDER BY metrics.cost_micros DESC
+    """
+    rows = query_google_ads(client, customer_id, query)
+    data = []
+    for r in rows:
+        custo = r.metrics.cost_micros / 1_000_000
+        data.append({
+            'shopping': SHOPPING_NOMES.get(shopping_sigla, shopping_sigla),
+            'shopping_sigla': shopping_sigla,
+            'campanha': r.campaign.name,
+            'grupo_anuncio_id': r.ad_group.id,
+            'grupo_anuncio': r.ad_group.name,
+            'status': r.ad_group.status.name,
+            'data': r.segments.date,
+            'impressoes': r.metrics.impressions,
+            'cliques': r.metrics.clicks,
+            'ctr': r.metrics.ctr,
+            'cpc_medio': r.metrics.average_cpc / 1_000_000,
+            'custo': custo,
+            'conversoes': r.metrics.conversions,
+            'valor_conversoes': r.metrics.conversions_value,
+            'cpa': r.metrics.cost_per_conversion / 1_000_000 if r.metrics.cost_per_conversion else 0,
+        })
+    return data
+
+
+def extrair_conversion_actions(client, customer_id, shopping_sigla, data_inicio, data_fim):
+    """Extrai conversoes por tipo de acao (purchase, lead, view, etc.)."""
+    query = f"""
+        SELECT
+            conversion_action.name, conversion_action.category,
+            segments.date, segments.conversion_action_category,
+            metrics.conversions, metrics.conversions_value,
+            metrics.all_conversions, metrics.all_conversions_value
+        FROM conversion_action
+        WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
+    """
+    rows = query_google_ads(client, customer_id, query)
+    data = []
+    for r in rows:
+        data.append({
+            'shopping': SHOPPING_NOMES.get(shopping_sigla, shopping_sigla),
+            'shopping_sigla': shopping_sigla,
+            'acao_conversao': r.conversion_action.name,
+            'categoria': r.conversion_action.category.name if r.conversion_action.category else '',
+            'data': r.segments.date,
+            'conversoes': r.metrics.conversions,
+            'valor_conversoes': r.metrics.conversions_value,
+            'todas_conversoes': r.metrics.all_conversions,
+            'valor_todas_conversoes': r.metrics.all_conversions_value,
+        })
+    return data
+
+
+def extrair_audiences(client, customer_id, shopping_sigla, data_inicio, data_fim):
+    """Extrai performance por segmento de audiencia."""
+    query = f"""
+        SELECT
+            campaign.name,
+            campaign_audience_view.resource_name,
+            segments.date,
+            metrics.impressions, metrics.clicks, metrics.cost_micros,
+            metrics.conversions, metrics.conversions_value
+        FROM campaign_audience_view
+        WHERE segments.date BETWEEN '{data_inicio}' AND '{data_fim}'
+    """
+    rows = query_google_ads(client, customer_id, query)
+    data = []
+    for r in rows:
+        res_name = r.campaign_audience_view.resource_name
+        audience = res_name.split('~')[-1] if '~' in res_name else res_name
+        data.append({
+            'shopping': SHOPPING_NOMES.get(shopping_sigla, shopping_sigla),
+            'shopping_sigla': shopping_sigla,
+            'campanha': r.campaign.name,
+            'audiencia': audience,
+            'data': r.segments.date,
+            'impressoes': r.metrics.impressions,
+            'cliques': r.metrics.clicks,
+            'custo': r.metrics.cost_micros / 1_000_000,
+            'conversoes': r.metrics.conversions,
+            'valor_conversoes': r.metrics.conversions_value,
+        })
+    return data
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extrator Google Ads (Multi-Customer)")
     parser.add_argument("--dias", type=int, default=90, help="Dias para extrair (default 90)")
@@ -408,6 +517,9 @@ def main():
         'search_terms': extrair_search_terms,
         'hora_dia': extrair_hora_dia,
         'alcance_frequencia': extrair_alcance_frequencia,
+        'ad_groups': extrair_ad_groups,
+        'conversion_actions': extrair_conversion_actions,
+        'audiences': extrair_audiences,
     }
 
     for nome_csv, func_extrair in extratores.items():

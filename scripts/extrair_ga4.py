@@ -1,6 +1,6 @@
 """
 Extrator GA4 (Google Analytics 4) Data API
-Gera 4 CSVs em Dados/GA4/
+Gera 8 CSVs em Dados/GA4/
 
 Requer:
   - google-analytics-data>=0.18.0
@@ -114,13 +114,16 @@ def extrair_landing_pages(client, property_id, data_inicio, data_fim):
 
 
 def extrair_diario(client, property_id, data_inicio, data_fim):
-    """Metricas agregadas por dia."""
+    """Metricas agregadas por dia (inclui engagement)."""
     df = run_report(
         client, property_id,
         dimensions=["date"],
-        metrics=["sessions", "totalUsers", "newUsers", "bounceRate",
-                 "averageSessionDuration", "screenPageViews",
-                 "conversions", "totalRevenue"],
+        metrics=["sessions", "totalUsers", "newUsers", "activeUsers",
+                 "bounceRate", "averageSessionDuration", "screenPageViews",
+                 "conversions", "totalRevenue",
+                 "engagementRate", "engagedSessions",
+                 "userEngagementDuration", "sessionsPerUser",
+                 "eventCount"],
         data_inicio=data_inicio, data_fim=data_fim,
     )
     df.to_csv(OUTPUT_DIR / "diario.csv", index=False, encoding='utf-8-sig')
@@ -156,6 +159,36 @@ def extrair_geografico(client, property_id, data_inicio, data_fim):
     return df
 
 
+def extrair_new_vs_returning(client, property_id, data_inicio, data_fim):
+    """Novos vs recorrentes por dia."""
+    df = run_report(
+        client, property_id,
+        dimensions=["date", "newVsReturning"],
+        metrics=["sessions", "totalUsers", "activeUsers",
+                 "conversions", "totalRevenue", "engagementRate",
+                 "averageSessionDuration", "bounceRate"],
+        data_inicio=data_inicio, data_fim=data_fim,
+    )
+    df.to_csv(OUTPUT_DIR / "new_vs_returning.csv", index=False, encoding='utf-8-sig')
+    print(f"  [GA4] new_vs_returning.csv: {len(df)} linhas")
+    return df
+
+
+def extrair_paginas(client, property_id, data_inicio, data_fim):
+    """Performance por pagina (pageTitle + pagePath)."""
+    df = run_report(
+        client, property_id,
+        dimensions=["date", "pageTitle", "pagePath"],
+        metrics=["sessions", "totalUsers", "screenPageViews",
+                 "bounceRate", "averageSessionDuration",
+                 "conversions", "totalRevenue", "engagementRate"],
+        data_inicio=data_inicio, data_fim=data_fim,
+    )
+    df.to_csv(OUTPUT_DIR / "paginas.csv", index=False, encoding='utf-8-sig')
+    print(f"  [GA4] paginas.csv: {len(df)} linhas")
+    return df
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extrator GA4")
     parser.add_argument("--dias", type=int, default=90, help="Dias para extrair (default 90)")
@@ -175,6 +208,8 @@ def main():
     extrair_diario(client, property_id, data_inicio, data_fim)
     extrair_dispositivos(client, property_id, data_inicio, data_fim)
     extrair_geografico(client, property_id, data_inicio, data_fim)
+    extrair_new_vs_returning(client, property_id, data_inicio, data_fim)
+    extrair_paginas(client, property_id, data_inicio, data_fim)
 
     print("[GA4] Extracao concluida!")
 

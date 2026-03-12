@@ -8,6 +8,12 @@ Gera CSVs em Dados/Consolidado/:
   - cross_platform_mensal.csv
   - funil_por_plataforma.csv
   - demografico_cross.csv
+  - dispositivos_cross.csv
+  - cross_platform_shopping_diario.csv
+  - cross_platform_shopping_mensal.csv
+  - hora_dia_cross.csv
+  - geografico_cross.csv
+  - video_cross.csv
 
 Uso:
   python scripts/consolidar_cross_platform.py
@@ -146,8 +152,23 @@ def consolidar_diario():
 
 
 def gerar_funil():
-    """Gera funil integrado: Impressoes → Cliques → LPV → Sessoes → Conversoes → Receita."""
+    """Gera funil integrado: Impressoes → Cliques → LPV → Sessoes → Conversoes → Receita.
+    CORRIGIDO: usa dados reais de LPV, conversoes e receita de todas as plataformas.
+    """
     registros = []
+
+    # Carregar GA4 sessoes por fonte (usado para todas as plataformas)
+    df_ga4 = carregar_csv_seguro(DADOS_DIR / "GA4" / "sessoes_por_fonte.csv")
+    fontes_map = {
+        'Google Ads': ['google'],
+        'Meta Ads': ['facebook', 'instagram', 'fb', 'ig', 'meta'],
+        'TikTok Ads': ['tiktok', 'tiktok.com'],
+    }
+    medium_map = {
+        'Google Ads': ['cpc', 'ppc'],
+        'Meta Ads': ['cpc', 'paid', 'paidsocial', 'paid-social'],
+        'TikTok Ads': ['cpc', 'paid', 'paidsocial'],
+    }
 
     for plataforma in ['Google Ads', 'Meta Ads', 'TikTok Ads']:
         impressoes = 0
@@ -156,6 +177,8 @@ def gerar_funil():
         sessoes = 0
         conversoes = 0
         receita = 0
+        leads = 0
+        add_to_cart = 0
 
         if plataforma == 'Google Ads':
             df = carregar_csv_seguro(DADOS_DIR / "Google_Ads" / "diario.csv")
@@ -171,8 +194,14 @@ def gerar_funil():
                 impressoes = df['impressoes'].sum()
                 cliques = df['cliques'].sum()
                 lpv = df['landing_page_view'].sum() if 'landing_page_view' in df.columns else 0
+                # Conversoes: purchase (acao nativa) + pixel purchase
                 conversoes = df['purchase'].sum() if 'purchase' in df.columns else 0
+                pixel_purchase = df['offsite_conversion.fb_pixel_purchase'].sum() if 'offsite_conversion.fb_pixel_purchase' in df.columns else 0
+                if conversoes == 0 and pixel_purchase > 0:
+                    conversoes = pixel_purchase
                 receita = df['valor_purchase'].sum() if 'valor_purchase' in df.columns else 0
+                leads = df['lead'].sum() if 'lead' in df.columns else 0
+                add_to_cart = df['add_to_cart'].sum() if 'add_to_cart' in df.columns else 0
 
         elif plataforma == 'TikTok Ads':
             df = carregar_csv_seguro(DADOS_DIR / "TikTok_Ads" / "diario.csv")
@@ -181,24 +210,21 @@ def gerar_funil():
                 cliques = df.get('clicks', pd.Series([0])).sum()
                 conversoes = df.get('conversion', pd.Series([0])).sum()
 
-        # GA4 sessoes por fonte
-        df_ga4 = carregar_csv_seguro(DADOS_DIR / "GA4" / "sessoes_por_fonte.csv")
+        # GA4 sessoes por fonte — match por source + medium
         if not df_ga4.empty:
-            fontes_map = {
-                'Google Ads': ['google', 'cpc'],
-                'Meta Ads': ['facebook', 'instagram', 'fb', 'ig'],
-                'TikTok Ads': ['tiktok'],
-            }
             fontes = fontes_map.get(plataforma, [])
-            mask = df_ga4['sessionSource'].str.lower().isin(fontes) | \
-                   df_ga4['sessionMedium'].str.lower().isin(['cpc', 'paid', 'paidsocial'])
-            if fontes:
-                mask = df_ga4['sessionSource'].str.lower().str.contains('|'.join(fontes), na=False)
+            mediums = medium_map.get(plataforma, [])
+            source_lower = df_ga4['sessionSource'].str.lower()
+            medium_lower = df_ga4['sessionMedium'].str.lower()
+            mask = source_lower.str.contains('|'.join(fontes), na=False)
+            if plataforma == 'Google Ads':
+                # Google precisa combinar source=google + medium=cpc (para nao pegar organico)
+                mask = mask & medium_lower.isin(mediums)
             sessoes_ga4 = df_ga4.loc[mask, 'sessions'].sum()
             if sessoes_ga4 > 0:
                 sessoes = sessoes_ga4
 
-        if lpv == 0:
+        if lpv == 0 and cliques > 0:
             lpv = cliques * 0.85  # estimativa se nao disponivel
 
         registros.append({
@@ -207,6 +233,8 @@ def gerar_funil():
             'cliques': cliques,
             'landing_page_views': lpv,
             'sessoes_ga4': sessoes,
+            'leads': leads,
+            'add_to_cart': add_to_cart,
             'conversoes': conversoes,
             'receita': receita,
         })
@@ -427,6 +455,183 @@ def consolidar_dispositivos():
     return df_devices
 
 
+def consolidar_hora_dia():
+    """Consolida dados por hora do dia de Google Ads, Meta Ads e TikTok Ads."""
+    registros = []
+
+    # Google Ads
+    df = carregar_csv_seguro(DADOS_DIR / "Google_Ads" / "hora_dia.csv")
+    if not df.empty:
+        col_hora = 'hora' if 'hora' in df.columns else 'hour_of_day'
+        for _, r in df.iterrows():
+            registros.append({
+                'hora': r.get(col_hora, 0),
+                'plataforma': 'Google Ads',
+                'impressoes': r.get('impressoes', 0),
+                'cliques': r.get('cliques', 0),
+                'custo': r.get('custo', 0),
+                'conversoes': r.get('conversoes', 0),
+            })
+
+    # Meta Ads
+    df = carregar_csv_seguro(DADOS_DIR / "Meta_Ads" / "hora_dia.csv")
+    if not df.empty:
+        col_hora = 'hourly_stats_aggregated_by_advertiser_time_zone'
+        if col_hora in df.columns:
+            for hora, grupo in df.groupby(col_hora):
+                registros.append({
+                    'hora': hora,
+                    'plataforma': 'Meta Ads',
+                    'impressoes': grupo['impressoes'].sum(),
+                    'cliques': grupo['cliques'].sum(),
+                    'custo': grupo['custo'].sum(),
+                    'conversoes': grupo.get('purchase', pd.Series([0])).sum(),
+                })
+
+    # TikTok Ads
+    df = carregar_csv_seguro(DADOS_DIR / "TikTok_Ads" / "hora_dia.csv")
+    if not df.empty:
+        col_hora = 'stat_time_hour' if 'stat_time_hour' in df.columns else 'hora'
+        if col_hora in df.columns:
+            # stat_time_hour é datetime, extrair hora
+            try:
+                df['_hora'] = pd.to_datetime(df[col_hora]).dt.hour
+            except Exception:
+                df['_hora'] = df[col_hora]
+            for hora, grupo in df.groupby('_hora'):
+                registros.append({
+                    'hora': hora,
+                    'plataforma': 'TikTok Ads',
+                    'impressoes': grupo.get('impressions', pd.Series([0])).sum(),
+                    'cliques': grupo.get('clicks', pd.Series([0])).sum(),
+                    'custo': grupo.get('spend', pd.Series([0])).sum(),
+                    'conversoes': grupo.get('conversion', pd.Series([0])).sum(),
+                })
+
+    df_hora = pd.DataFrame(registros)
+    if not df_hora.empty:
+        df_hora['ctr'] = np.where(df_hora['impressoes'] > 0, df_hora['cliques'] / df_hora['impressoes'] * 100, 0)
+        df_hora['cpc'] = np.where(df_hora['cliques'] > 0, df_hora['custo'] / df_hora['cliques'], 0)
+    df_hora.to_csv(OUTPUT_DIR / "hora_dia_cross.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Consolidar] hora_dia_cross.csv: {len(df_hora)} linhas")
+    return df_hora
+
+
+def consolidar_geografico():
+    """Consolida dados geograficos de Google Ads, Meta Ads, TikTok Ads e Search Console."""
+    registros = []
+
+    # Google Ads
+    df = carregar_csv_seguro(DADOS_DIR / "Google_Ads" / "geografico.csv")
+    if not df.empty:
+        col_loc = 'localizacao' if 'localizacao' in df.columns else 'location'
+        for _, r in df.iterrows():
+            registros.append({
+                'localizacao': r.get(col_loc, ''),
+                'plataforma': 'Google Ads',
+                'impressoes': r.get('impressoes', 0),
+                'cliques': r.get('cliques', 0),
+                'custo': r.get('custo', 0),
+                'conversoes': r.get('conversoes', 0),
+            })
+
+    # Meta Ads
+    df = carregar_csv_seguro(DADOS_DIR / "Meta_Ads" / "geografico.csv")
+    if not df.empty:
+        col_loc = 'country' if 'country' in df.columns else 'pais'
+        for _, r in df.iterrows():
+            registros.append({
+                'localizacao': r.get(col_loc, ''),
+                'plataforma': 'Meta Ads',
+                'impressoes': r.get('impressoes', 0),
+                'cliques': r.get('cliques', 0),
+                'custo': r.get('custo', 0),
+                'conversoes': r.get('purchase', 0),
+            })
+
+    # TikTok Ads
+    df = carregar_csv_seguro(DADOS_DIR / "TikTok_Ads" / "geografico.csv")
+    if not df.empty:
+        col_loc = 'country_code' if 'country_code' in df.columns else 'country'
+        for _, r in df.iterrows():
+            registros.append({
+                'localizacao': r.get(col_loc, ''),
+                'plataforma': 'TikTok Ads',
+                'impressoes': r.get('impressions', 0),
+                'cliques': r.get('clicks', 0),
+                'custo': r.get('spend', 0),
+                'conversoes': r.get('conversion', 0),
+            })
+
+    # Search Console (paises)
+    df = carregar_csv_seguro(DADOS_DIR / "Search_Console" / "paises.csv")
+    if not df.empty and 'country' in df.columns:
+        for pais, grupo in df.groupby('country'):
+            registros.append({
+                'localizacao': pais,
+                'plataforma': 'Search Console',
+                'impressoes': grupo['impressoes'].sum(),
+                'cliques': grupo['cliques'].sum(),
+                'custo': 0,
+                'conversoes': 0,
+            })
+
+    df_geo = pd.DataFrame(registros)
+    if not df_geo.empty:
+        df_geo['ctr'] = np.where(df_geo['impressoes'] > 0, df_geo['cliques'] / df_geo['impressoes'] * 100, 0)
+        df_geo['cpa'] = np.where(df_geo['conversoes'] > 0, df_geo['custo'] / df_geo['conversoes'], 0)
+    df_geo.to_csv(OUTPUT_DIR / "geografico_cross.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Consolidar] geografico_cross.csv: {len(df_geo)} linhas")
+    return df_geo
+
+
+def consolidar_video():
+    """Consolida metricas de video de Meta Ads e TikTok Ads."""
+    registros = []
+
+    # Meta Ads (video tem quartis p25..p100)
+    df = carregar_csv_seguro(DADOS_DIR / "Meta_Ads" / "video.csv")
+    if not df.empty:
+        video_cols = [c for c in df.columns if c.startswith('video_p')]
+        for _, r in df.iterrows():
+            registro = {
+                'plataforma': 'Meta Ads',
+                'campanha': r.get('campanha', ''),
+                'impressoes': r.get('impressoes', 0),
+                'custo': r.get('custo', 0),
+            }
+            for vc in video_cols:
+                registro[vc] = r.get(vc, 0)
+            registros.append(registro)
+
+    # TikTok Ads (video_engagement com quartis e metricas de engajamento)
+    df = carregar_csv_seguro(DADOS_DIR / "TikTok_Ads" / "video_engagement.csv")
+    if not df.empty:
+        for _, r in df.iterrows():
+            registro = {
+                'plataforma': 'TikTok Ads',
+                'campanha': r.get('campaign_name', r.get('campanha', '')),
+                'impressoes': r.get('impressions', 0),
+                'custo': r.get('spend', 0),
+            }
+            # Mapear TikTok quartis para formato padrao
+            for tk_col, std_col in [
+                ('video_watched_2s', 'video_2s'),
+                ('video_watched_6s', 'video_6s'),
+                ('video_views_p25', 'video_p25'),
+                ('video_views_p50', 'video_p50'),
+                ('video_views_p75', 'video_p75'),
+                ('video_views_p100', 'video_p100'),
+            ]:
+                registro[std_col] = r.get(tk_col, 0)
+            registros.append(registro)
+
+    df_video = pd.DataFrame(registros)
+    df_video.to_csv(OUTPUT_DIR / "video_cross.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Consolidar] video_cross.csv: {len(df_video)} linhas")
+    return df_video
+
+
 def main():
     print("[Consolidar] Processando dados cross-platform...")
     consolidar_diario()
@@ -434,6 +639,9 @@ def main():
     consolidar_demografico()
     consolidar_por_shopping()
     consolidar_dispositivos()
+    consolidar_hora_dia()
+    consolidar_geografico()
+    consolidar_video()
     print("[Consolidar] Concluido!")
 
 

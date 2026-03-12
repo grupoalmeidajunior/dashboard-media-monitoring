@@ -602,9 +602,9 @@ def pagina_google_ads():
             return df[(df['data'] >= _gads_periodo_inicio) & (df['data'] <= _gads_periodo_fim)]
         return df
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
         "Campanhas", "Palavras-Chave", "Demografico", "Geografico", "Dispositivos",
-        "Search Terms", "Hora / Dia", "Alcance / Frequencia"
+        "Search Terms", "Hora / Dia", "Alcance / Frequencia", "Ad Groups", "Conversoes"
     ])
 
     with tab1:
@@ -894,6 +894,100 @@ def pagina_google_ads():
 
             render_explicacao(EXPLICACOES['google_ads']['alcance_frequencia'])
 
+    with tab9:
+        df = dados.get('ad_groups', pd.DataFrame())
+        if df.empty:
+            st.info("Sem dados de ad groups. Disponivel apos proxima extracao.")
+        else:
+            df = _aplicar_periodo_gads(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel, col='shopping_sigla')
+            st.subheader("Performance por Grupo de Anuncios")
+
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                render_kpi("Ad Groups Ativos", df['ad_group_name'].nunique() if 'ad_group_name' in df.columns else 0, "inteiro")
+            with c2:
+                render_kpi("Investimento", df['custo'].sum() if 'custo' in df.columns else 0, "moeda")
+            with c3:
+                conv = df['conversoes'].sum() if 'conversoes' in df.columns else 0
+                custo = df['custo'].sum() if 'custo' in df.columns else 0
+                cpa = custo / conv if conv > 0 else 0
+                render_kpi("CPA Medio", cpa, "moeda")
+
+            st.markdown("---")
+            col_ag = 'ad_group_name' if 'ad_group_name' in df.columns else 'ad_group'
+            if col_ag in df.columns:
+                df_ag = df.groupby([col_ag, 'campanha'] if 'campanha' in df.columns else [col_ag]).agg({
+                    c: 'sum' for c in ['impressoes', 'cliques', 'custo', 'conversoes', 'valor_conversoes']
+                    if c in df.columns
+                }).reset_index()
+                if 'custo' in df_ag.columns and 'conversoes' in df_ag.columns:
+                    df_ag['cpa'] = np.where(df_ag['conversoes'] > 0, df_ag['custo'] / df_ag['conversoes'], 0)
+                if 'impressoes' in df_ag.columns and 'cliques' in df_ag.columns:
+                    df_ag['ctr'] = np.where(df_ag['impressoes'] > 0, df_ag['cliques'] / df_ag['impressoes'] * 100, 0)
+                df_ag = df_ag.sort_values('custo' if 'custo' in df_ag.columns else col_ag, ascending=False)
+
+                fmt = {}
+                for c in ['custo', 'cpa', 'valor_conversoes']:
+                    if c in df_ag.columns:
+                        fmt[c] = 'R$ {:.2f}'
+                if 'ctr' in df_ag.columns:
+                    fmt['ctr'] = '{:.2f}%'
+                st.dataframe(df_ag.style.format(fmt), use_container_width=True)
+
+                # Top 15 ad groups por custo
+                if 'custo' in df_ag.columns and len(df_ag) > 0:
+                    fig = px.bar(df_ag.head(15), x='custo', y=col_ag, orientation='h',
+                                 color='cpa' if 'cpa' in df_ag.columns else None,
+                                 color_continuous_scale='RdYlGn_r',
+                                 title="Top 15 Ad Groups por Investimento")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="gads_adgroups")
+
+            render_explicacao(EXPLICACOES['google_ads']['ad_groups'])
+
+    with tab10:
+        df = dados.get('conversion_actions', pd.DataFrame())
+        if df.empty:
+            st.info("Sem dados de conversoes detalhadas. Disponivel apos proxima extracao.")
+        else:
+            df = _aplicar_periodo_gads(df)
+            df = _aplicar_filtro_shopping(df, shopping_sel, col='shopping_sigla')
+            st.subheader("Acoes de Conversao Detalhadas")
+
+            col_name = 'conversion_action_name' if 'conversion_action_name' in df.columns else 'nome_conversao'
+            col_cat = 'conversion_category' if 'conversion_category' in df.columns else 'categoria'
+            col_conv = 'conversoes' if 'conversoes' in df.columns else 'conversions'
+            col_val = 'valor_conversoes' if 'valor_conversoes' in df.columns else 'conversions_value'
+
+            if col_name in df.columns:
+                df_conv = df.groupby(col_name).agg({
+                    c: 'sum' for c in [col_conv, col_val, 'all_conversions', 'all_conversions_value']
+                    if c in df.columns
+                }).reset_index().sort_values(col_conv if col_conv in df.columns else col_name, ascending=False)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    render_kpi("Tipos de Conversao", len(df_conv), "inteiro")
+                with c2:
+                    total_conv = df_conv[col_conv].sum() if col_conv in df_conv.columns else 0
+                    render_kpi("Total Conversoes", total_conv, "inteiro")
+
+                st.markdown("---")
+                st.dataframe(df_conv, use_container_width=True)
+
+                # Grafico de conversoes por tipo
+                if col_conv in df_conv.columns and len(df_conv) > 0:
+                    top = df_conv.head(10)
+                    fig = px.bar(top, x=col_conv, y=col_name, orientation='h',
+                                 color=col_val if col_val in top.columns else None,
+                                 color_continuous_scale='Viridis',
+                                 title="Top 10 Acoes de Conversao")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="gads_conv_actions")
+
+            render_explicacao(EXPLICACOES['google_ads']['conversion_actions'])
+
 
 # =============================================================================
 # PAGINA: META ADS
@@ -915,7 +1009,10 @@ def pagina_meta_ads():
             opcoes = ["Todos"] + shoppings
             meta_shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key="meta_shopping")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Campanhas", "Plataformas", "Posicionamento", "Video", "Demografico"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+        "Campanhas", "Plataformas", "Posicionamento", "Video", "Demografico",
+        "Quality Rankings", "Geografico", "Hora / Dia"
+    ])
 
     with tab1:
         df = dados.get('campanhas', pd.DataFrame())
@@ -1019,6 +1116,107 @@ def pagina_meta_ads():
                          color_discrete_sequence=['#1877F2', '#E1306C', '#999'])
             render_chart(fig, key="meta_gen")
         render_explicacao(EXPLICACOES['meta_ads']['demografico'])
+
+    with tab6:
+        df = dados.get('campanhas', pd.DataFrame())
+        if df.empty:
+            st.info("Sem dados de campanhas para quality rankings.")
+        else:
+            df = _aplicar_filtro_shopping(df, meta_shopping_sel)
+            st.subheader("Rankings de Qualidade por Campanha")
+
+            rank_cols = ['quality_ranking', 'engagement_rate_ranking', 'conversion_rate_ranking']
+            has_ranks = [c for c in rank_cols if c in df.columns and df[c].notna().any() and (df[c] != '').any()]
+
+            if not has_ranks:
+                st.info("Dados de quality ranking nao disponiveis. Disponivel apos proxima extracao.")
+            else:
+                # Resumo geral
+                for rc in has_ranks:
+                    st.subheader(rc.replace('_', ' ').title())
+                    vc = df[rc].value_counts()
+                    fig = px.pie(values=vc.values, names=vc.index, hole=0.4,
+                                 color_discrete_sequence=['#34A853', '#FBBC04', '#EA4335', '#999'])
+                    fig.update_traces(textinfo='label+percent')
+                    render_chart(fig, key=f"meta_qr_{rc}")
+
+                # Tabela por campanha
+                st.subheader("Rankings por Campanha")
+                cols_show = ['campanha'] + has_ranks + ['impressoes', 'custo', 'ctr']
+                cols_show = [c for c in cols_show if c in df.columns]
+                df_rank = df.groupby('campanha').agg({
+                    c: 'first' if c in rank_cols else 'sum' if c in ['impressoes', 'custo'] else 'mean'
+                    for c in cols_show if c != 'campanha'
+                }).reset_index()
+                st.dataframe(df_rank, use_container_width=True)
+
+                render_explicacao(EXPLICACOES['meta_ads']['quality_rankings'])
+
+    with tab7:
+        df = dados.get('geografico', pd.DataFrame())
+        if df.empty:
+            st.info("Sem dados geograficos. Disponivel apos proxima extracao.")
+        else:
+            df = _aplicar_filtro_shopping(df, meta_shopping_sel)
+            st.subheader("Performance por Pais")
+            col_country = 'country' if 'country' in df.columns else 'pais'
+            if col_country in df.columns:
+                df_geo = df.groupby(col_country).agg({
+                    'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum'
+                }).reset_index().sort_values('custo', ascending=False)
+                df_geo['ctr'] = np.where(df_geo['impressoes'] > 0, df_geo['cliques'] / df_geo['impressoes'] * 100, 0)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    fig = px.pie(df_geo.head(10), values='custo', names=col_country, hole=0.4,
+                                 title="Distribuicao de Investimento por Pais")
+                    render_chart(fig, key="meta_geo_pie")
+                with c2:
+                    fig = px.bar(df_geo.head(10), x='custo', y=col_country, orientation='h',
+                                 color='ctr', color_continuous_scale='RdYlGn',
+                                 title="Top 10 Paises — Custo e CTR")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="meta_geo_bar")
+
+                st.dataframe(df_geo.style.format({
+                    'custo': 'R$ {:.2f}', 'ctr': '{:.2f}%'
+                }), use_container_width=True)
+            render_explicacao(EXPLICACOES['meta_ads']['geografico'])
+
+    with tab8:
+        df = dados.get('hora_dia', pd.DataFrame())
+        if df.empty:
+            st.info("Sem dados por hora. Disponivel apos proxima extracao.")
+        else:
+            df = _aplicar_filtro_shopping(df, meta_shopping_sel)
+            st.subheader("Performance por Hora do Dia")
+            col_hora = 'hourly_stats_aggregated_by_advertiser_time_zone'
+            if col_hora in df.columns:
+                df_hora = df.groupby(col_hora).agg({
+                    'impressoes': 'sum', 'cliques': 'sum', 'custo': 'sum'
+                }).reset_index()
+                df_hora['ctr'] = np.where(df_hora['impressoes'] > 0,
+                                           df_hora['cliques'] / df_hora['impressoes'] * 100, 0)
+                df_hora = df_hora.rename(columns={col_hora: 'hora'})
+                df_hora = df_hora.sort_values('hora')
+
+                fig = go.Figure()
+                fig.add_trace(go.Bar(x=df_hora['hora'], y=df_hora['custo'],
+                                      name='Investimento (R$)', marker_color='#1877F2'))
+                fig.add_trace(go.Scatter(x=df_hora['hora'], y=df_hora['ctr'],
+                                          name='CTR (%)', mode='lines+markers',
+                                          marker_color='#E1306C', yaxis='y2'))
+                fig.update_layout(
+                    yaxis=dict(title='Investimento (R$)'),
+                    yaxis2=dict(title='CTR (%)', side='right', overlaying='y'),
+                    xaxis_title='Hora do Dia',
+                    hovermode='x unified',
+                )
+                render_chart(fig, key="meta_hora")
+                st.dataframe(df_hora.style.format({
+                    'custo': 'R$ {:.2f}', 'ctr': '{:.2f}%'
+                }), use_container_width=True)
+            render_explicacao(EXPLICACOES['meta_ads']['hora_dia'])
 
 
 # =============================================================================
@@ -1403,8 +1601,9 @@ def pagina_tiktok_ads():
 def pagina_ga4_search_console():
     st.title("GA4 / Search Console")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Fontes de Trafego", "Landing Pages", "Consultas Organicas", "Dispositivos", "Geografico"
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+        "Fontes de Trafego", "Landing Pages", "Consultas Organicas", "Dispositivos", "Geografico",
+        "Engajamento", "Novos vs Recorrentes", "Paginas", "Paises (SC)", "Search Appearance"
     ])
 
     with tab1:
@@ -1514,6 +1713,233 @@ def pagina_ga4_search_console():
                 st.info("Colunas esperadas nao encontradas nos dados geograficos.")
                 st.dataframe(df.head(20), use_container_width=True)
             render_explicacao(EXPLICACOES['ga4']['geografico'])
+
+    with tab6:
+        df = carregar_csv("GA4/diario.csv")
+        if df.empty:
+            st.info("Sem dados diarios de GA4.")
+        else:
+            st.subheader("Metricas de Engajamento ao Longo do Tempo")
+            col_date = 'date' if 'date' in df.columns else 'data'
+
+            # KPIs de engajamento
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                er = df['engagementRate'].mean() * 100 if 'engagementRate' in df.columns else 0
+                render_kpi("Taxa Engajamento", er, "percentual")
+            with c2:
+                es = df['engagedSessions'].sum() if 'engagedSessions' in df.columns else 0
+                render_kpi("Sessoes Engajadas", es, "inteiro")
+            with c3:
+                spu = df['sessionsPerUser'].mean() if 'sessionsPerUser' in df.columns else 0
+                render_kpi("Sessoes/Usuario", spu, "numero")
+            with c4:
+                ec = df['eventCount'].sum() if 'eventCount' in df.columns else 0
+                render_kpi("Total Eventos", ec, "inteiro")
+
+            st.markdown("---")
+
+            # Evolucao engagement rate
+            if 'engagementRate' in df.columns and col_date in df.columns:
+                df_sorted = df.sort_values(col_date)
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=df_sorted[col_date], y=df_sorted['engagementRate'] * 100,
+                    mode='lines+markers', name='Taxa de Engajamento (%)',
+                    line=dict(color='#E37400', width=2)))
+                if 'bounceRate' in df_sorted.columns:
+                    br = df_sorted['bounceRate'] * 100 if df_sorted['bounceRate'].max() <= 1 else df_sorted['bounceRate']
+                    fig.add_trace(go.Scatter(
+                        x=df_sorted[col_date], y=br,
+                        mode='lines', name='Bounce Rate (%)',
+                        line=dict(color='#EA4335', width=2, dash='dot')))
+                fig.update_layout(yaxis_title='%', hovermode='x unified')
+                render_chart(fig, key="ga4_engagement")
+
+            # Engajamento vs sessoes
+            if 'engagedSessions' in df.columns and 'sessions' in df.columns and col_date in df.columns:
+                df_sorted = df.sort_values(col_date)
+                fig = go.Figure()
+                fig.add_trace(go.Bar(x=df_sorted[col_date], y=df_sorted['sessions'],
+                                      name='Sessoes Totais', marker_color='#F9AB00'))
+                fig.add_trace(go.Bar(x=df_sorted[col_date], y=df_sorted['engagedSessions'],
+                                      name='Sessoes Engajadas', marker_color='#34A853'))
+                fig.update_layout(barmode='overlay', yaxis_title='Sessoes', hovermode='x unified')
+                render_chart(fig, key="ga4_eng_sessions")
+
+            render_explicacao(EXPLICACOES['ga4']['engagement'])
+
+    with tab7:
+        df = carregar_csv("GA4/new_vs_returning.csv")
+        if df.empty:
+            st.info("Sem dados de novos vs recorrentes. Disponivel apos proxima extracao.")
+        else:
+            st.subheader("Novos vs Recorrentes")
+            col_nvr = 'newVsReturning' if 'newVsReturning' in df.columns else 'tipo'
+
+            if col_nvr in df.columns:
+                df_nvr = df.groupby(col_nvr).agg({
+                    c: 'sum' for c in ['sessions', 'totalUsers', 'activeUsers', 'conversions', 'totalRevenue']
+                    if c in df.columns
+                }).reset_index()
+
+                # KPIs lado a lado
+                c1, c2 = st.columns(2)
+                for idx, row in df_nvr.iterrows():
+                    col = c1 if idx == 0 else c2
+                    with col:
+                        tipo = row[col_nvr]
+                        st.markdown(f"### {'Novos' if 'new' in str(tipo).lower() else 'Recorrentes'}")
+                        render_kpi("Sessoes", row.get('sessions', 0), "inteiro")
+                        render_kpi("Usuarios", row.get('totalUsers', 0), "inteiro")
+                        if 'conversions' in df_nvr.columns:
+                            render_kpi("Conversoes", row.get('conversions', 0), "inteiro")
+
+                # Grafico comparativo
+                if 'sessions' in df_nvr.columns:
+                    fig = px.bar(df_nvr, x=col_nvr, y='sessions', color=col_nvr,
+                                 color_discrete_sequence=['#4285F4', '#34A853'],
+                                 title="Sessoes: Novos vs Recorrentes")
+                    render_chart(fig, key="ga4_nvr_sessions")
+
+                # Evolucao ao longo do tempo
+                col_date = 'date' if 'date' in df.columns else 'data'
+                if col_date in df.columns and 'sessions' in df.columns:
+                    df_time = df.groupby([col_date, col_nvr])['sessions'].sum().reset_index()
+                    fig = px.area(df_time, x=col_date, y='sessions', color=col_nvr,
+                                  color_discrete_sequence=['#4285F4', '#34A853'],
+                                  title="Evolucao Novos vs Recorrentes")
+                    render_chart(fig, key="ga4_nvr_evolucao")
+
+            render_explicacao(EXPLICACOES['ga4']['new_vs_returning'])
+
+    with tab8:
+        df = carregar_csv("GA4/paginas.csv")
+        if df.empty:
+            st.info("Sem dados de paginas. Disponivel apos proxima extracao.")
+        else:
+            st.subheader("Performance por Pagina")
+            col_page = 'pagePath' if 'pagePath' in df.columns else 'pagina'
+            col_title = 'pageTitle' if 'pageTitle' in df.columns else 'titulo'
+
+            agg_cols = {c: 'sum' for c in ['sessions', 'totalUsers', 'screenPageViews', 'conversions', 'totalRevenue']
+                        if c in df.columns}
+            for c in ['bounceRate', 'averageSessionDuration', 'engagementRate']:
+                if c in df.columns:
+                    agg_cols[c] = 'mean'
+
+            if col_page in df.columns and agg_cols:
+                grp = [col_page]
+                if col_title in df.columns:
+                    grp.append(col_title)
+                df_pages = df.groupby(grp).agg(agg_cols).reset_index()
+                sort_col = 'screenPageViews' if 'screenPageViews' in df_pages.columns else 'sessions'
+                df_pages = df_pages.sort_values(sort_col, ascending=False)
+
+                # KPIs
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    render_kpi("Total Paginas", len(df_pages), "inteiro")
+                with c2:
+                    render_kpi("PageViews", df_pages[sort_col].sum(), "inteiro")
+                with c3:
+                    if 'engagementRate' in df_pages.columns:
+                        render_kpi("Engajamento Medio", df_pages['engagementRate'].mean() * 100, "percentual")
+
+                st.markdown("---")
+
+                # Top 20 paginas
+                top = df_pages.head(20)
+                fmt = {}
+                for c in ['bounceRate', 'engagementRate']:
+                    if c in top.columns:
+                        fmt[c] = '{:.1%}'
+                for c in ['averageSessionDuration']:
+                    if c in top.columns:
+                        fmt[c] = '{:.1f}s'
+                for c in ['totalRevenue']:
+                    if c in top.columns:
+                        fmt[c] = 'R$ {:.2f}'
+                st.dataframe(top.style.format(fmt), use_container_width=True)
+
+                if sort_col in top.columns:
+                    fig = px.bar(top.head(15), x=sort_col, y=col_page, orientation='h',
+                                 color_discrete_sequence=['#E37400'],
+                                 title="Top 15 Paginas por PageViews")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="ga4_pages_bar")
+
+            render_explicacao(EXPLICACOES['ga4']['paginas'])
+
+    with tab9:
+        df = carregar_csv("Search_Console/paises.csv")
+        if df.empty:
+            st.info("Sem dados por pais do Search Console. Disponivel apos proxima extracao.")
+        else:
+            st.subheader("Trafego Organico por Pais")
+            if 'country' in df.columns:
+                df_pais = df.groupby('country').agg({
+                    'cliques': 'sum', 'impressoes': 'sum', 'ctr': 'mean', 'posicao': 'mean'
+                }).reset_index().sort_values('cliques', ascending=False)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    fig = px.pie(df_pais.head(10), values='cliques', names='country', hole=0.4,
+                                 title="Cliques Organicos por Pais")
+                    render_chart(fig, key="sc_pais_pie")
+                with c2:
+                    fig = px.bar(df_pais.head(10), x='cliques', y='country', orientation='h',
+                                 color='ctr', color_continuous_scale='RdYlGn',
+                                 title="Top 10 Paises — Cliques e CTR")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="sc_pais_bar")
+
+                st.dataframe(df_pais.style.format({
+                    'ctr': '{:.2f}%', 'posicao': '{:.1f}'
+                }), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['paises'])
+
+    with tab10:
+        df = carregar_csv("Search_Console/search_appearance.csv")
+        if df.empty:
+            st.info("Sem dados de search appearance. Disponivel apos proxima extracao.")
+        else:
+            st.subheader("Tipos de Resultado de Busca (Rich Results)")
+            col_sa = 'searchAppearance' if 'searchAppearance' in df.columns else 'tipo'
+            if col_sa in df.columns:
+                df_sa = df.groupby(col_sa).agg({
+                    'cliques': 'sum', 'impressoes': 'sum', 'ctr': 'mean'
+                }).reset_index().sort_values('impressoes', ascending=False)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    fig = px.pie(df_sa, values='impressoes', names=col_sa, hole=0.4,
+                                 title="Impressoes por Tipo de Resultado")
+                    render_chart(fig, key="sc_sa_pie")
+                with c2:
+                    fig = px.bar(df_sa, x='impressoes', y=col_sa, orientation='h',
+                                 color='ctr', color_continuous_scale='RdYlGn',
+                                 title="Impressoes e CTR por Tipo")
+                    fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                    render_chart(fig, key="sc_sa_bar")
+
+                st.dataframe(df_sa.style.format({
+                    'ctr': '{:.2f}%'
+                }), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['search_appearance'])
+
+        # Query → Page mapping (bonus section)
+        df_qp = carregar_csv("Search_Console/query_page.csv")
+        if not df_qp.empty and 'query' in df_qp.columns and 'page' in df_qp.columns:
+            st.markdown("---")
+            st.subheader("Mapeamento Keyword → Pagina")
+            df_qp_agg = df_qp.groupby(['query', 'page']).agg({
+                'cliques': 'sum', 'impressoes': 'sum', 'ctr': 'mean', 'posicao': 'mean'
+            }).reset_index().sort_values('cliques', ascending=False).head(30)
+            st.dataframe(df_qp_agg.style.format({
+                'ctr': '{:.2f}%', 'posicao': '{:.1f}'
+            }), use_container_width=True)
+            render_explicacao(EXPLICACOES['ga4']['query_page'])
 
 
 # =============================================================================

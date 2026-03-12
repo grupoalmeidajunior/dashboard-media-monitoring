@@ -157,6 +157,25 @@ META_DEMOGRAFICO = {
     'o_que_fazer': 'Use para criar Lookalike Audiences baseados nos segmentos de melhor performance. Exclua faixas etarias com CPA muito alto para reduzir desperdicio.',
 }
 
+META_QUALITY_RANKINGS = {
+    'o_que_mostra': 'Rankings de qualidade do Meta Ads: Quality Ranking, Engagement Rate Ranking e Conversion Rate Ranking por campanha.',
+    'como_interpretar': 'Cada ranking compara seu anuncio com outros que competem pelo mesmo publico. "ABOVE_AVERAGE" e bom, "BELOW_AVERAGE_35" significa que 65% dos concorrentes sao melhores. Rankings baixos = custo mais alto no leilao.',
+    'o_que_fazer': 'Quality Ranking baixo: melhore a imagem/video. Engagement Ranking baixo: melhore o texto e CTA. Conversion Ranking baixo: melhore a landing page e oferta.',
+    'alerta': 'Anuncios com os 3 rankings abaixo da media estao pagando premium no leilao — priorize a otimizacao ou pause-os.',
+}
+
+META_GEOGRAFICO = {
+    'o_que_mostra': 'Distribuicao de impressoes, cliques e custo por pais de origem do publico.',
+    'como_interpretar': 'Verifique se o investimento esta concentrado nos paises-alvo. Custo de paises fora do Brasil pode indicar segmentacao geografica muito ampla.',
+    'o_que_fazer': 'Se ha gasto relevante fora do Brasil, restrinja a segmentacao geografica. Use os dados para justificar ou cortar investimento em mercados secundarios.',
+}
+
+META_HORA_DIA = {
+    'o_que_mostra': 'Distribuicao de investimento, impressoes e cliques por hora do dia no Meta Ads.',
+    'como_interpretar': 'Identifique os horarios com melhor CTR e menor CPA. Horarios de madrugada costumam ter CPM mais baixo mas menos qualidade de trafego.',
+    'o_que_fazer': 'Se a maioria das conversoes acontece entre 8h-22h, considere restringir os horarios de exibicao. Use dayparting para otimizar a distribuicao de verba ao longo do dia.',
+}
+
 # =============================================================================
 # TIKTOK ADS
 # =============================================================================
@@ -226,6 +245,42 @@ GA4_LANDING_PAGES = {
     'o_que_mostra': 'Quais paginas do site recebem mais trafego e como performam: taxa de rejeicao, tempo na pagina e conversoes.',
     'como_interpretar': 'Landing pages com alto trafego e alta conversao sao as melhores — proteja-as. Paginas com alto trafego e alta rejeicao precisam de otimizacao urgente.',
     'o_que_fazer': 'Para paginas com alta rejeicao: 1) Verifique velocidade de carregamento. 2) Confirme que o conteudo corresponde ao anuncio. 3) Melhore o CTA (chamada para acao). Para paginas de alta conversao: crie mais anuncios apontando para elas.',
+}
+
+GA4_ENGAGEMENT = {
+    'o_que_mostra': 'Metricas de engajamento do site: taxa de engajamento, sessoes engajadas, duracao media e eventos por sessao ao longo do tempo.',
+    'como_interpretar': 'Taxa de engajamento (engagementRate) e o oposto do bounce rate — mede % de sessoes com interacao real (scroll, clique, 10s+). Sessoes engajadas crescendo = conteudo relevante. userEngagementDuration alto = visitantes gastando tempo real no site.',
+    'o_que_fazer': 'Se a taxa de engajamento esta abaixo de 50%, revise o conteudo e velocidade do site. Compare dias da semana para identificar padroes. Use sessionsPerUser para medir fidelizacao.',
+}
+
+GA4_NEW_VS_RETURNING = {
+    'o_que_mostra': 'Comparativo entre usuarios novos e recorrentes: volume, conversoes, engajamento e receita de cada grupo.',
+    'como_interpretar': 'Usuarios recorrentes costumam converter mais e ter maior ticket medio. Se novos > 80%, o site depende muito de aquisicao. Se recorrentes convertem bem, invista em retencao (email, remarketing).',
+    'o_que_fazer': 'Se novos nao convertem: melhore a primeira experiencia e oferta. Se recorrentes estao caindo: revise estrategia de retencao. Ideal: 60-70% novos, 30-40% recorrentes.',
+}
+
+GA4_PAGINAS = {
+    'o_que_mostra': 'Performance detalhada por pagina do site: pageviews, sessoes, bounce rate, tempo medio e conversoes.',
+    'como_interpretar': 'Paginas com muitos pageviews mas alto bounce rate precisam de otimizacao. Paginas com alta conversao devem receber mais trafego. Compare engagementRate entre paginas para identificar conteudo de qualidade.',
+    'o_que_fazer': 'Direcione anuncios para paginas de alta conversao. Otimize paginas de alto trafego com bounce alto. Remova ou melhore paginas sem trafego e sem conversao.',
+}
+
+SC_PAISES = {
+    'o_que_mostra': 'De quais paises vem as impressoes e cliques organicos no Google Search.',
+    'como_interpretar': 'Se ha muitas impressoes de paises fora do alvo, pode indicar conteudo sendo indexado para mercados irrelevantes. CTR baixo em paises secundarios e normal.',
+    'o_que_fazer': 'Se o foco e Brasil, garanta que hreflang esta configurado. Impressoes de outros paises lusófonos (Portugal, Angola) podem ser oportunidade.',
+}
+
+SC_SEARCH_APPEARANCE = {
+    'o_que_mostra': 'Como seu site aparece nos resultados do Google: rich results, snippets, FAQ, videos, etc.',
+    'como_interpretar': 'Rich results (FAQ, How-to, Review) tem CTR significativamente maior que resultados normais. Se voce tem muitas impressoes sem rich results, esta perdendo cliques.',
+    'o_que_fazer': 'Implemente Schema.org (dados estruturados) nas paginas para ativar rich results. FAQ Schema e o mais facil de implementar e pode dobrar o CTR.',
+}
+
+SC_QUERY_PAGE = {
+    'o_que_mostra': 'Mapeamento de quais termos de busca levam a quais paginas — a relacao keyword ↔ landing page.',
+    'como_interpretar': 'Identifique canibalizacao: se 2+ paginas competem pela mesma keyword, o Google pode ficar confuso. Paginas com muitas keywords diferentes sao generalistas demais.',
+    'o_que_fazer': 'Consolide paginas que competem pela mesma keyword. Crie conteudo especifico para keywords de alto volume que apontam para paginas genericas. Use para planejar nova estrutura de URLs.',
 }
 
 SEARCH_CONSOLE_CONSULTAS = {
@@ -312,6 +367,19 @@ ALERTAS_SATURACAO = {
 }
 
 
+# --- AD GROUPS ---
+GOOGLE_AD_GROUPS = {
+    'o_que_mostra': 'Performance por grupo de anuncios: custo, cliques, conversoes e CPA de cada ad group dentro das campanhas.',
+    'como_interpretar': 'Ad groups com alto CPA e baixa conversao devem ser otimizados ou pausados. Compare ad groups da mesma campanha para identificar qual segmentacao funciona melhor.',
+    'o_que_fazer': 'Pause ad groups com CPA muito acima da media. Redistribua verba para ad groups com melhor performance. Use como referencia para criar novos ad groups com segmentacao similar aos melhores.',
+}
+
+GOOGLE_CONVERSION_ACTIONS = {
+    'o_que_mostra': 'Detalhamento das acoes de conversao configuradas: quantas conversoes cada tipo gerou e quanto valor trouxe.',
+    'como_interpretar': 'Identifique quais tipos de conversao geram mais valor (purchase vs lead vs signup). Conversoes com alto volume mas baixo valor podem estar inflando os numeros sem retorno real.',
+    'o_que_fazer': 'Revise as conversoes configuradas — remova as que nao representam valor real. Priorize campanhas otimizadas para as conversoes de maior valor. Configure valores de conversao corretamente para melhorar o ROAS.',
+}
+
 # --- ALCANCE E FREQUENCIA ---
 GOOGLE_ALCANCE_FREQUENCIA = {
     'o_que_mostra': 'Alcance (pessoas unicas atingidas) e frequencia media (vezes que cada pessoa viu o anuncio) para campanhas Display, Video e Demand Gen.',
@@ -367,6 +435,8 @@ EXPLICACOES = {
         'search_terms': GOOGLE_SEARCH_TERMS,
         'hora_dia': GOOGLE_HORA_DIA,
         'alcance_frequencia': GOOGLE_ALCANCE_FREQUENCIA,
+        'ad_groups': GOOGLE_AD_GROUPS,
+        'conversion_actions': GOOGLE_CONVERSION_ACTIONS,
     },
     'meta_ads': {
         'campanhas': META_CAMPANHAS,
@@ -374,6 +444,9 @@ EXPLICACOES = {
         'posicionamento': META_POSICIONAMENTO,
         'video': META_VIDEO,
         'demografico': META_DEMOGRAFICO,
+        'quality_rankings': META_QUALITY_RANKINGS,
+        'geografico': META_GEOGRAFICO,
+        'hora_dia': META_HORA_DIA,
     },
     'tiktok_ads': {
         'campanhas': TIKTOK_CAMPANHAS,
@@ -390,6 +463,12 @@ EXPLICACOES = {
         'oportunidades': SEARCH_CONSOLE_OPORTUNIDADES,
         'dispositivos': GA4_DISPOSITIVOS,
         'geografico': GA4_GEOGRAFICO,
+        'engagement': GA4_ENGAGEMENT,
+        'new_vs_returning': GA4_NEW_VS_RETURNING,
+        'paginas': GA4_PAGINAS,
+        'paises': SC_PAISES,
+        'search_appearance': SC_SEARCH_APPEARANCE,
+        'query_page': SC_QUERY_PAGE,
     },
     'comparativo': {
         'cpa_roas': COMPARATIVO_CPA_ROAS,

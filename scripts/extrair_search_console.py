@@ -1,6 +1,6 @@
 """
 Extrator Google Search Console
-Gera 3 CSVs em Dados/Search_Console/
+Gera 8 CSVs em Dados/Search_Console/
 
 Requer:
   - google-api-python-client>=2.100.0
@@ -125,6 +125,24 @@ def main():
         df['oportunidade_seo'] = (df['impressoes'] > mediana_imp) & (df['ctr'] < 0.03)
     df.to_csv(OUTPUT_DIR / "oportunidades_seo.csv", index=False, encoding='utf-8-sig')
     print(f"  [Search Console] oportunidades_seo.csv: {len(df)} linhas")
+
+    # 6. Por pais
+    df = fetch_search_analytics(service, site_url, data_inicio, data_fim,
+                                dimensions=['date', 'country'])
+    df.to_csv(OUTPUT_DIR / "paises.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Search Console] paises.csv: {len(df)} linhas")
+
+    # 7. Search Appearance (rich results, snippets, etc.)
+    df = fetch_search_analytics(service, site_url, data_inicio, data_fim,
+                                dimensions=['date', 'searchAppearance'])
+    df.to_csv(OUTPUT_DIR / "search_appearance.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Search Console] search_appearance.csv: {len(df)} linhas")
+
+    # 8. Query + Page (keyword-to-landing mapping)
+    df = fetch_search_analytics(service, site_url, data_inicio, data_fim,
+                                dimensions=['query', 'page'])
+    df.to_csv(OUTPUT_DIR / "query_page.csv", index=False, encoding='utf-8-sig')
+    print(f"  [Search Console] query_page.csv: {len(df)} linhas")
 
     print("[Search Console] Extracao concluida!")
 

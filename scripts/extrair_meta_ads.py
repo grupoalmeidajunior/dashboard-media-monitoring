@@ -1,6 +1,6 @@
 """
 Extrator Meta Ads (Facebook + Instagram) Marketing API v22
-Gera 7 CSVs em Dados/Meta_Ads/ (com coluna shopping)
+Gera 9 CSVs em Dados/Meta_Ads/ (com coluna shopping)
 
 Multi-conta: META_ADS_CONFIG (JSON) com ad_account_id por shopping
 Requer:
@@ -107,6 +107,8 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
         'video_avg_time_watched_actions',
         'video_p25_watched_actions', 'video_p50_watched_actions',
         'video_p75_watched_actions', 'video_p100_watched_actions',
+        'quality_ranking', 'engagement_rate_ranking', 'conversion_rate_ranking',
+        'outbound_clicks',
     ]
 
     params = {
@@ -167,13 +169,29 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
 
         # Adicionar acoes desserializadas
         for k in ['link_click', 'landing_page_view', 'lead', 'purchase',
-                   'add_to_cart', 'initiate_checkout', 'complete_registration']:
+                   'add_to_cart', 'initiate_checkout', 'complete_registration',
+                   'post_engagement', 'post_reaction', 'page_engagement',
+                   'offsite_conversion.fb_pixel_purchase',
+                   'offsite_conversion.fb_pixel_lead',
+                   'offsite_conversion.fb_pixel_view_content']:
             registro[k] = acoes.get(k, 0)
             registro[f'valor_{k}'] = acoes.get(f'valor_{k}', 0)
             registro[f'custo_{k}'] = acoes.get(f'custo_{k}', 0)
 
         # Video
         registro.update(video)
+
+        # Quality Rankings
+        registro['quality_ranking'] = row_dict.get('quality_ranking', '')
+        registro['engagement_rate_ranking'] = row_dict.get('engagement_rate_ranking', '')
+        registro['conversion_rate_ranking'] = row_dict.get('conversion_rate_ranking', '')
+
+        # Outbound clicks
+        outbound = row_dict.get('outbound_clicks', [])
+        if outbound:
+            registro['outbound_clicks'] = sum(float(o.get('value', 0)) for o in outbound)
+        else:
+            registro['outbound_clicks'] = 0
 
         # Breakdowns
         if breakdowns:
@@ -200,6 +218,8 @@ def extrair_todas_contas(accounts, data_inicio, data_fim):
         {"nome": "demografico_genero", "breakdowns": ['gender'], "increment": 'monthly'},
         {"nome": "dispositivo", "breakdowns": ['device_platform'], "increment": 'monthly'},
         {"nome": "video", "breakdowns": None, "increment": 'monthly'},
+        {"nome": "geografico", "breakdowns": ['country'], "increment": 'monthly'},
+        {"nome": "hora_dia", "breakdowns": ['hourly_stats_aggregated_by_advertiser_time_zone'], "increment": 'monthly'},
     ]
 
     for tipo in tipos_extracao:

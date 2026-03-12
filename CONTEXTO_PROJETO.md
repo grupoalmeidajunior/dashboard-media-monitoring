@@ -12,26 +12,27 @@ Painel unificado de performance de midia digital que consolida dados de Google A
 Dashboard_Media/
 ├── app.py                  # Dashboard principal (12 paginas, 5 grupos)
 ├── insights_midia.py       # Semaforos, insights, recomendacoes, anomalias
+├── explicacoes_graficos.py # Explicacoes para todos os graficos
 ├── requirements.txt
 ├── AJ.jpg                  # Logo
 ├── .streamlit/config.toml  # Tema AJ
 ├── .github/workflows/      # Pipeline diario (7h BRT)
 ├── scripts/
-│   ├── extrair_google_ads.py
-│   ├── extrair_meta_ads.py
-│   ├── extrair_tiktok_ads.py
-│   ├── extrair_ga4.py
-│   ├── extrair_search_console.py
-│   ├── consolidar_cross_platform.py
+│   ├── extrair_google_ads.py       # 9 CSVs (campanhas, diario, keywords, demografico, geografico, dispositivos, hora_dia, search_terms, alcance_frequencia, ad_groups, conversion_actions, audiences)
+│   ├── extrair_meta_ads.py         # 9 CSVs (campanhas, plataforma, posicionamento, demografico_idade/genero, dispositivo, video, geografico, hora_dia)
+│   ├── extrair_tiktok_ads.py       # 12 CSVs
+│   ├── extrair_ga4.py              # 8 CSVs (sessoes_por_fonte, conversoes, landing_pages, diario, dispositivos, geografico, new_vs_returning, paginas)
+│   ├── extrair_search_console.py   # 8 CSVs (consultas, paginas, dispositivos, consultas_device, oportunidades_seo, paises, search_appearance, query_page)
+│   ├── consolidar_cross_platform.py # 11 CSVs consolidados
 │   ├── gerar_recomendacoes.py
 │   └── notificar_whatsapp.py
 └── Dados/
-    ├── Google_Ads/     (6 CSVs)
-    ├── Meta_Ads/       (7 CSVs)
+    ├── Google_Ads/     (9+ CSVs)
+    ├── Meta_Ads/       (9 CSVs)
     ├── TikTok_Ads/     (12 CSVs)
-    ├── GA4/            (4 CSVs)
-    ├── Search_Console/ (3 CSVs)
-    └── Consolidado/    (7 CSVs)
+    ├── GA4/            (8 CSVs)
+    ├── Search_Console/ (8 CSVs)
+    └── Consolidado/    (11 CSVs)
 ```
 
 ## Paginas (12)
@@ -40,10 +41,10 @@ Dashboard_Media/
 2. Tendencias - Evolucao ROAS/CPA mensal, area empilhada, dia da semana
 
 ### Grupo 2: Por Plataforma
-3. Google Ads - 8 tabs (Campanhas, Keywords, Demo, Geo, Dispositivos, Search Terms, Hora/Dia, **Alcance/Frequencia**)
-4. Meta Ads - 5 tabs (Campanhas, Plataformas, Posicionamento, Video, Demo)
+3. Google Ads - 10 tabs (Campanhas, Keywords, Demo, Geo, Dispositivos, Search Terms, Hora/Dia, Alcance/Frequencia, **Ad Groups**, **Conversoes**)
+4. Meta Ads - 8 tabs (Campanhas, Plataformas, Posicionamento, Video, Demo, **Quality Rankings**, **Geografico**, **Hora/Dia**)
 5. TikTok Ads - 8 tabs (Campanhas, Video Engagement, Demo, Hora/Dia, Plataforma, Ad Groups, Alcance/Frequencia, Metadados)
-6. GA4 / Search Console - 3 tabs (Fontes, Landing Pages, Consultas)
+6. GA4 / Search Console - 10 tabs (Fontes, Landing Pages, Consultas, Dispositivos, Geografico, **Engajamento**, **Novos vs Recorrentes**, **Paginas**, **Paises SC**, **Search Appearance**)
 
 ### Grupo 3: Cross-Platform
 7. Comparativo - CPA/ROAS lado a lado, radar 5 dimensoes, ranking
@@ -117,6 +118,16 @@ Dashboard_Media/
 - Sessao 4 (cont.): Dashboard TikTok de 3 para 8 tabs (+ Hora/Dia, Plataforma, Ad Groups, Alcance/Frequencia, Metadados)
 - Sessao 4 (cont.): Explicacoes de graficos para 5 novas sections TikTok
 - Sessao 4 (cont.): Consolidador cross-platform atualizado com dispositivos TikTok
+
+- Sessao 5 (12/03/2026): Auditoria completa de todas as plataformas — implementacao de dados faltantes
+- Sessao 5 (cont.): Google Ads: +3 extratores (ad_groups, conversion_actions, audiences), bidding_strategy_type, QS components (qualidade_criativo, qualidade_landing, ctr_esperado)
+- Sessao 5 (cont.): Meta Ads: quality_ranking/engagement_rate_ranking/conversion_rate_ranking, outbound_clicks, +3 breakdowns (geografico/hora_dia), expanded actions (pixel purchase/lead/view_content)
+- Sessao 5 (cont.): GA4: +6 engagement metrics (engagementRate, engagedSessions, userEngagementDuration, sessionsPerUser, eventCount, activeUsers), +2 reports (new_vs_returning, paginas)
+- Sessao 5 (cont.): Search Console: +3 reports (paises, search_appearance, query_page)
+- Sessao 5 (cont.): Consolidador: +3 consolidacoes cross-platform (hora_dia_cross, geografico_cross, video_cross) — total 11 CSVs
+- Sessao 5 (cont.): Dashboard: Google Ads 8→10 tabs (+Ad Groups, +Conversoes), Meta Ads 5→8 tabs (+Quality Rankings, +Geografico, +Hora/Dia), GA4/SC 5→10 tabs (+Engajamento, +Novos vs Recorrentes, +Paginas, +Paises, +Search Appearance)
+- Sessao 5 (cont.): Explicacoes de graficos: +11 novas explicacoes para todos os novos graficos/tabs
+- Sessao 5 (cont.): Funil integrado corrigido: Meta fallback pixel purchase, Google source+medium match, leads/add_to_cart
 
 ## Proximos Passos (ao retomar)
 1. **TikTok Ads:** Aprovar app para demais shoppings (BS, CS, NK, NR, GS) e adicionar ao TIKTOK_ADS_CONFIG
