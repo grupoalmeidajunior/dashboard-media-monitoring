@@ -28,7 +28,7 @@ Dashboard_Media/
 └── Dados/
     ├── Google_Ads/     (6 CSVs)
     ├── Meta_Ads/       (7 CSVs)
-    ├── TikTok_Ads/     (5 CSVs)
+    ├── TikTok_Ads/     (12 CSVs)
     ├── GA4/            (4 CSVs)
     ├── Search_Console/ (3 CSVs)
     └── Consolidado/    (7 CSVs)
@@ -42,7 +42,7 @@ Dashboard_Media/
 ### Grupo 2: Por Plataforma
 3. Google Ads - 8 tabs (Campanhas, Keywords, Demo, Geo, Dispositivos, Search Terms, Hora/Dia, **Alcance/Frequencia**)
 4. Meta Ads - 5 tabs (Campanhas, Plataformas, Posicionamento, Video, Demo)
-5. TikTok Ads - 3 tabs (Campanhas, Video Engagement, Demo)
+5. TikTok Ads - 8 tabs (Campanhas, Video Engagement, Demo, Hora/Dia, Plataforma, Ad Groups, Alcance/Frequencia, Metadados)
 6. GA4 / Search Console - 3 tabs (Fontes, Landing Pages, Consultas)
 
 ### Grupo 3: Cross-Platform
@@ -87,7 +87,7 @@ Dashboard_Media/
 | GA4 + Search Console | ✅ OK | GA4_PROPERTY_ID, GA4_SERVICE_ACCOUNT_JSON, SEARCH_CONSOLE_SITE_URL |
 | Meta Ads | ✅ OK (4 secrets) | META_ADS_APP_ID, META_ADS_APP_SECRET, META_ADS_ACCESS_TOKEN, META_ADS_CONFIG |
 | Google Ads | ✅ OK (5 secrets) | GOOGLE_ADS_DEVELOPER_TOKEN, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, LOGIN_CUSTOMER_ID, CUSTOMER_ID |
-| TikTok Ads | ⏳ PENDENTE | App resubmetido (site almeidajunior.com.br), aguardando aprovacao |
+| TikTok Ads | ✅ OK (NS) | TIKTOK_ADS_CONFIG (JSON com token+advertiser_id por shopping). App aprovado para NS |
 
 ## Self-Hosted Runner
 - **Runner:** `media-runner` em `C:\actions-runner-media\`
@@ -110,8 +110,16 @@ Dashboard_Media/
 - Sessao 3 (cont.): Fix pipeline: timeout-minutes em todos os steps (10-30min)
 - Sessao 3 (cont.): Fix bug pagina Organico (Streamlit Cloud cache — reboot resolveu)
 
+- Sessao 4 (12/03/2026): Configuracao TikTok Ads NS — OAuth2 token gerado, TIKTOK_ADS_CONFIG secret configurado
+- Sessao 4 (cont.): Fix extrator TikTok — json.dumps params, AUDIENCE report type, metrics_audience sem total_complete_payment_rate
+- Sessao 4 (cont.): 7 novos relatorios TikTok: hora_dia, geografico, plataforma, adgroup_diario, alcance_frequencia, campanhas_metadata, adgroups_metadata
+- Sessao 4 (cont.): Enriquecimento com nomes — campanhas.csv + video_engagement.csv + adgroup_diario.csv (merge com metadata)
+- Sessao 4 (cont.): Dashboard TikTok de 3 para 8 tabs (+ Hora/Dia, Plataforma, Ad Groups, Alcance/Frequencia, Metadados)
+- Sessao 4 (cont.): Explicacoes de graficos para 5 novas sections TikTok
+- Sessao 4 (cont.): Consolidador cross-platform atualizado com dispositivos TikTok
+
 ## Proximos Passos (ao retomar)
-1. **TikTok Ads:** App aprovado para 1 shopping, aguardando acesso ao email de verificacao para gerar access token
+1. **TikTok Ads:** Aprovar app para demais shoppings (BS, CS, NK, NR, GS) e adicionar ao TIKTOK_ADS_CONFIG
 2. **secrets.toml:** Criar usuarios para login no dashboard
 3. **Deploy Streamlit Cloud**
 
@@ -129,6 +137,19 @@ Dashboard_Media/
 - Requisito: 10k+ impressoes na campanha (senao retorna 0)
 - Max 92 dias por query, delay ~3 dias
 - Dados: 49 campanhas, 4.7M alcance, freq media 1.43 (dados atuais)
+
+### TikTok Ads — Detalhes Tecnicos
+- API: TikTok Marketing API v1.3 (REST, requests direto)
+- Auth: OAuth2 (app_id + secret → auth_code → access_token)
+- 12 CSVs: campanhas, video_engagement, demografico_idade/genero, diario, hora_dia, geografico, plataforma, adgroup_diario, alcance_frequencia, campanhas_metadata, adgroups_metadata
+- Demograficos: report_type=AUDIENCE, data_level=AUCTION_ADVERTISER (age/gender nao suportam BASIC)
+- Hora do dia: stat_time_hour exige range max 1 dia → loop dia a dia (fetch_hourly_report)
+- Alcance/frequencia: metricas reach+frequency no report BASIC por campaign_id
+- Metadados: endpoints separados /campaign/get/ e /adgroup/get/ (nomes, objetivos, status)
+- Enriquecimento: merge campaign_name em campanhas.csv, video_engagement.csv e adgroup_diario.csv
+- NS Advertiser ID: 7322585255381352449
+- App ID: 7615457506518188048
+- Permissoes: ad_account_info, report_read, campaign_read (scopes 2, 4)
 
 ### Meta Ads — Otimizacao Pipeline
 - Breakdowns (plataforma, posicionamento, idade, genero, dispositivo, video) usam `time_increment: 'monthly'`

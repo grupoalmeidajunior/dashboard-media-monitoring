@@ -390,6 +390,20 @@ def consolidar_dispositivos():
                 'conversoes': r.get('purchase', 0),
             })
 
+    # TikTok Ads
+    df = carregar_csv_seguro(DADOS_DIR / "TikTok_Ads" / "plataforma.csv")
+    if not df.empty:
+        plat_map = {'ANDROID': 'Mobile', 'IPHONE': 'Mobile', 'IPAD': 'Tablet', 'PC': 'Desktop'}
+        for plat, grupo in df.groupby('platform'):
+            registros.append({
+                'plataforma': 'TikTok Ads',
+                'dispositivo': plat_map.get(plat, plat),
+                'impressoes': grupo.get('impressions', pd.Series([0])).sum(),
+                'cliques': grupo.get('clicks', pd.Series([0])).sum(),
+                'custo': grupo.get('spend', pd.Series([0])).sum(),
+                'conversoes': grupo.get('conversion', pd.Series([0])).sum(),
+            })
+
     # GA4
     df = carregar_csv_seguro(DADOS_DIR / "GA4" / "dispositivos.csv")
     if not df.empty:

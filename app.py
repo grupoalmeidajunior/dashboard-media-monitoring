@@ -1032,38 +1032,72 @@ def pagina_tiktok_ads():
         st.info("Sem dados do TikTok Ads. Execute `scripts/extrair_tiktok_ads.py`.")
         return
 
-    tab1, tab2, tab3 = st.tabs(["Campanhas", "Video Engagement", "Demografico"])
+    # Filtro shopping no sidebar
+    df_ref = dados.get('campanhas', pd.DataFrame())
+    shopping_sel = None
+    if not df_ref.empty and 'shopping' in df_ref.columns:
+        shoppings = sorted(df_ref['shopping'].dropna().unique().tolist())
+        if shoppings:
+            opcoes = ["Todos"] + shoppings
+            shopping_sel = st.sidebar.selectbox("Shopping", opcoes, index=0, key="tt_shopping")
+
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+        "Campanhas", "Video Engagement", "Demografico", "Hora / Dia",
+        "Plataforma", "Ad Groups", "Alcance / Frequencia", "Metadados"
+    ])
 
     with tab1:
         df = dados.get('campanhas', pd.DataFrame())
         if df.empty:
             st.info("Sem dados de campanhas.")
         else:
-            col_custo = 'spend' if 'spend' in df.columns else 'custo'
-            col_imp = 'impressions' if 'impressions' in df.columns else 'impressoes'
-            col_cli = 'clicks' if 'clicks' in df.columns else 'cliques'
-            col_conv = 'conversion' if 'conversion' in df.columns else 'conversoes'
-
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             c1, c2, c3, c4 = st.columns(4)
             with c1:
-                render_kpi("Investimento", df[col_custo].sum() if col_custo in df.columns else 0, "moeda")
+                render_kpi("Investimento", df['spend'].sum() if 'spend' in df.columns else 0, "moeda")
             with c2:
-                render_kpi("Impressoes", df[col_imp].sum() if col_imp in df.columns else 0, "inteiro")
+                render_kpi("Impressoes", df['impressions'].sum() if 'impressions' in df.columns else 0, "inteiro")
             with c3:
-                render_kpi("Cliques", df[col_cli].sum() if col_cli in df.columns else 0, "inteiro")
+                render_kpi("Cliques", df['clicks'].sum() if 'clicks' in df.columns else 0, "inteiro")
             with c4:
-                render_kpi("Conversoes", df[col_conv].sum() if col_conv in df.columns else 0, "inteiro")
+                render_kpi("Conversoes", df['conversion'].sum() if 'conversion' in df.columns else 0, "inteiro")
+
+            # Tabela de campanhas com nome
+            st.markdown("---")
+            st.subheader("Performance por Campanha")
+            if 'campaign_name' in df.columns:
+                agg_cols = {'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum', 'conversion': 'sum'}
+                eng = {'likes': 'sum', 'shares': 'sum', 'comments': 'sum', 'follows': 'sum', 'profile_visits': 'sum'}
+                agg_cols.update({k: v for k, v in eng.items() if k in df.columns})
+                df_camp = df.groupby(['campaign_name', 'objective_type'], as_index=False, dropna=False).agg(agg_cols)
+                df_camp['CTR'] = (df_camp['clicks'] / df_camp['impressions'].replace(0, 1) * 100).round(2)
+                df_camp['CPM'] = (df_camp['spend'] / df_camp['impressions'].replace(0, 1) * 1000).round(2)
+                df_camp = df_camp.sort_values('spend', ascending=False)
+                st.dataframe(df_camp, use_container_width=True, hide_index=True)
 
             # Engagement metrics
             st.markdown("---")
-            st.subheader("Engajamento")
+            st.subheader("Engajamento Total")
             eng_cols = ['likes', 'comments', 'shares', 'follows', 'profile_visits']
             eng_data = {c: df[c].sum() for c in eng_cols if c in df.columns}
             if eng_data:
                 cols = st.columns(len(eng_data))
                 for i, (k, v) in enumerate(eng_data.items()):
                     with cols[i]:
-                        render_kpi(k.capitalize(), v, "inteiro")
+                        render_kpi(k.replace('_', ' ').capitalize(), v, "inteiro")
+
+            # Evolucao diaria
+            if 'stat_time_day' in df.columns:
+                st.markdown("---")
+                st.subheader("Evolucao Diaria")
+                df['data'] = pd.to_datetime(df['stat_time_day'])
+                df_dia = df.groupby('data', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum'})
+                fig = px.bar(df_dia, x='data', y='spend', color_discrete_sequence=['#000000'],
+                             labels={'spend': 'Investimento (R$)', 'data': 'Data'})
+                fig.add_scatter(x=df_dia['data'], y=df_dia['impressions'] / df_dia['impressions'].max() * df_dia['spend'].max(),
+                                mode='lines', name='Impressoes (normalizado)', line=dict(color='#E6002B'))
+                render_chart(fig, key="tt_evol_diario")
+
             render_explicacao(EXPLICACOES['tiktok_ads']['campanhas'])
 
     with tab2:
@@ -1071,9 +1105,10 @@ def pagina_tiktok_ads():
         if df.empty:
             st.info("Sem dados de video engagement.")
         else:
+            df = _aplicar_filtro_shopping(df, shopping_sel)
             st.subheader("Funil de Retencao de Video")
             quartis = ['video_views_p25', 'video_views_p50', 'video_views_p75', 'video_views_p100']
-            labels = ['25%', '50%', '75%', '100%']
+            labels = ['25% assistido', '50% assistido', '75% assistido', '100% assistido']
             vals = [df[q].sum() if q in df.columns else 0 for q in quartis]
 
             if any(v > 0 for v in vals):
@@ -1081,26 +1116,285 @@ def pagina_tiktok_ads():
                 fig = px.funnel(df_funil, x='Views', y='Quartil',
                                 color_discrete_sequence=['#000000'])
                 render_chart(fig, key="tt_video")
-                render_explicacao(EXPLICACOES['tiktok_ads']['video'])
+
+            # Metricas detalhadas de video
+            st.markdown("---")
+            st.subheader("Metricas de Video Detalhadas")
+            vid_metrics = {
+                'video_play_actions': 'Plays',
+                'video_watched_2s': 'Watched 2s+',
+                'video_watched_6s': 'Watched 6s+',
+                'engaged_view': 'Engaged Views',
+                'engaged_view_15s': 'Engaged 15s+',
+            }
+            vid_data = {v: df[k].sum() for k, v in vid_metrics.items() if k in df.columns and df[k].sum() > 0}
+            if vid_data:
+                cols = st.columns(len(vid_data))
+                for i, (k, v) in enumerate(vid_data.items()):
+                    with cols[i]:
+                        render_kpi(k, v, "inteiro")
+
+            # Tempo medio de visualizacao
+            if 'average_video_play' in df.columns:
+                avg_play = df['average_video_play'].mean()
+                st.metric("Tempo Medio de Visualizacao", f"{avg_play:.1f}s")
+
+            # Por campanha (se tem nome)
+            if 'campaign_name' in df.columns:
+                st.markdown("---")
+                st.subheader("Retencao por Campanha")
+                vid_cols = {c: 'sum' for c in quartis if c in df.columns}
+                if 'average_video_play' in df.columns:
+                    vid_cols['average_video_play'] = 'mean'
+                vid_cols['impressions'] = 'sum'
+                df_vid_camp = df.groupby('campaign_name', as_index=False, dropna=False).agg(vid_cols)
+                # Taxa de retencao 100%
+                if 'video_views_p25' in df_vid_camp.columns and 'video_views_p100' in df_vid_camp.columns:
+                    df_vid_camp['taxa_retencao_%'] = (df_vid_camp['video_views_p100'] / df_vid_camp['video_views_p25'].replace(0, 1) * 100).round(1)
+                df_vid_camp = df_vid_camp.sort_values('impressions', ascending=False)
+                st.dataframe(df_vid_camp, use_container_width=True, hide_index=True)
+
+            render_explicacao(EXPLICACOES['tiktok_ads']['video'])
 
     with tab3:
         df_idade = dados.get('demografico_idade', pd.DataFrame())
         df_genero = dados.get('demografico_genero', pd.DataFrame())
+        df_idade = _aplicar_filtro_shopping(df_idade, shopping_sel)
+        df_genero = _aplicar_filtro_shopping(df_genero, shopping_sel)
 
-        if not df_idade.empty and 'age' in df_idade.columns:
-            st.subheader("Performance por Faixa Etaria")
-            col_custo = 'spend' if 'spend' in df_idade.columns else 'custo'
-            df_age = df_idade.groupby('age')[col_custo].sum().reset_index()
-            fig = px.bar(df_age, x='age', y=col_custo, color_discrete_sequence=['#000000'])
-            render_chart(fig, key="tt_age")
+        col_a, col_b = st.columns(2)
 
-        if not df_genero.empty and 'gender' in df_genero.columns:
-            st.subheader("Performance por Genero")
-            col_custo = 'spend' if 'spend' in df_genero.columns else 'custo'
-            df_gen = df_genero.groupby('gender')[col_custo].sum().reset_index()
-            fig = px.pie(df_gen, values=col_custo, names='gender', hole=0.4,
-                         color_discrete_sequence=['#000000', '#666', '#ccc'])
-            render_chart(fig, key="tt_gen")
+        with col_a:
+            if not df_idade.empty and 'age' in df_idade.columns:
+                st.subheader("Investimento por Faixa Etaria")
+                df_age = df_idade.groupby('age', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum'})
+                df_age['CTR'] = (df_age['clicks'] / df_age['impressions'].replace(0, 1) * 100).round(2)
+                # Ordenar faixas
+                ordem_idade = ['AGE_13_17', 'AGE_18_24', 'AGE_25_34', 'AGE_35_44', 'AGE_45_54', 'AGE_55_100', 'NONE']
+                df_age['ordem'] = df_age['age'].apply(lambda x: ordem_idade.index(x) if x in ordem_idade else 99)
+                df_age = df_age.sort_values('ordem')
+                fig = px.bar(df_age, x='age', y='spend', text='CTR',
+                             color_discrete_sequence=['#000000'],
+                             labels={'spend': 'Investimento (R$)', 'age': 'Faixa Etaria'})
+                fig.update_traces(texttemplate='CTR: %{text}%', textposition='outside')
+                render_chart(fig, key="tt_age")
+
+        with col_b:
+            if not df_genero.empty and 'gender' in df_genero.columns:
+                st.subheader("Investimento por Genero")
+                df_gen = df_genero.groupby('gender', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum'})
+                df_gen['gender'] = df_gen['gender'].map({'MALE': 'Masculino', 'FEMALE': 'Feminino', 'NONE': 'N/D'}).fillna(df_gen['gender'])
+                fig = px.pie(df_gen, values='spend', names='gender', hole=0.4,
+                             color_discrete_sequence=['#000000', '#E6002B', '#ccc'])
+                render_chart(fig, key="tt_gen")
+
+        # Tabela cruzada
+        if not df_idade.empty:
+            st.markdown("---")
+            st.subheader("Detalhamento por Faixa Etaria")
+            df_det = df_idade.groupby('age', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum', 'conversion': 'sum'})
+            df_det['CTR %'] = (df_det['clicks'] / df_det['impressions'].replace(0, 1) * 100).round(2)
+            df_det['CPC'] = (df_det['spend'] / df_det['clicks'].replace(0, 1)).round(2)
+            df_det = df_det.sort_values('spend', ascending=False)
+            st.dataframe(df_det, use_container_width=True, hide_index=True)
+
+    with tab4:
+        df_hora = dados.get('hora_dia', pd.DataFrame())
+        if df_hora.empty:
+            st.info("Sem dados de hora do dia.")
+        else:
+            df_hora = _aplicar_filtro_shopping(df_hora, shopping_sel)
+            st.subheader("Performance por Hora do Dia")
+            if 'hora' in df_hora.columns:
+                df_h = df_hora.groupby('hora', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum', 'likes': 'sum'})
+                fig = px.bar(df_h, x='hora', y='impressions', color_discrete_sequence=['#000000'],
+                             labels={'impressions': 'Impressoes', 'hora': 'Hora do Dia'})
+                fig.add_scatter(x=df_h['hora'], y=df_h['spend'] / df_h['spend'].max() * df_h['impressions'].max(),
+                                mode='lines+markers', name='Investimento (normalizado)', line=dict(color='#E6002B'))
+                fig.update_layout(xaxis=dict(dtick=1))
+                render_chart(fig, key="tt_hora")
+
+                # Engajamento por hora
+                st.markdown("---")
+                st.subheader("Engajamento por Hora")
+                eng_h_cols = ['likes', 'comments', 'shares', 'follows']
+                eng_h_exist = [c for c in eng_h_cols if c in df_h.columns]
+                if eng_h_exist:
+                    fig2 = px.bar(df_h, x='hora', y=eng_h_exist, barmode='stack',
+                                  labels={'value': 'Quantidade', 'hora': 'Hora'},
+                                  color_discrete_sequence=['#000000', '#E6002B', '#666', '#999'])
+                    fig2.update_layout(xaxis=dict(dtick=1))
+                    render_chart(fig2, key="tt_hora_eng")
+            render_explicacao(EXPLICACOES['tiktok_ads']['hora_dia'])
+
+    with tab5:
+        df_plat = dados.get('plataforma', pd.DataFrame())
+        if df_plat.empty:
+            st.info("Sem dados de plataforma.")
+        else:
+            df_plat = _aplicar_filtro_shopping(df_plat, shopping_sel)
+            st.subheader("Performance por Plataforma (OS)")
+
+            col_a, col_b = st.columns(2)
+            with col_a:
+                df_p = df_plat.groupby('platform', as_index=False).agg({'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum'})
+                df_p['platform'] = df_p['platform'].map({'ANDROID': 'Android', 'IPHONE': 'iPhone', 'IPAD': 'iPad', 'PC': 'PC'}).fillna(df_p['platform'])
+                fig = px.pie(df_p, values='spend', names='platform', hole=0.4,
+                             color_discrete_sequence=['#000000', '#E6002B', '#666', '#ccc'])
+                fig.update_layout(title="Distribuicao de Investimento")
+                render_chart(fig, key="tt_plat_pie")
+
+            with col_b:
+                fig2 = px.bar(df_p, x='platform', y=['impressions', 'clicks'], barmode='group',
+                              color_discrete_sequence=['#000000', '#E6002B'],
+                              labels={'value': 'Quantidade', 'platform': 'Plataforma'})
+                fig2.update_layout(title="Impressoes e Cliques por Plataforma")
+                render_chart(fig2, key="tt_plat_bar")
+
+            # Evolucao diaria por plataforma
+            if 'stat_time_day' in df_plat.columns:
+                st.markdown("---")
+                st.subheader("Evolucao Diaria por Plataforma")
+                df_plat['data'] = pd.to_datetime(df_plat['stat_time_day'])
+                df_plat_dia = df_plat.groupby(['data', 'platform'], as_index=False).agg({'spend': 'sum'})
+                df_plat_dia['platform'] = df_plat_dia['platform'].map(
+                    {'ANDROID': 'Android', 'IPHONE': 'iPhone', 'IPAD': 'iPad', 'PC': 'PC'}
+                ).fillna(df_plat_dia['platform'])
+                fig3 = px.area(df_plat_dia, x='data', y='spend', color='platform',
+                               color_discrete_sequence=['#000000', '#E6002B', '#666', '#ccc'],
+                               labels={'spend': 'Investimento (R$)', 'data': 'Data'})
+                render_chart(fig3, key="tt_plat_evol")
+            render_explicacao(EXPLICACOES['tiktok_ads']['plataforma'])
+
+    with tab6:
+        df_ag = dados.get('adgroup_diario', pd.DataFrame())
+        if df_ag.empty:
+            st.info("Sem dados de ad groups.")
+        else:
+            df_ag = _aplicar_filtro_shopping(df_ag, shopping_sel)
+            st.subheader("Performance por Ad Group")
+
+            # KPIs
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                render_kpi("Ad Groups", df_ag['adgroup_id'].nunique() if 'adgroup_id' in df_ag.columns else 0, "inteiro")
+            with c2:
+                render_kpi("Investimento", df_ag['spend'].sum() if 'spend' in df_ag.columns else 0, "moeda")
+            with c3:
+                render_kpi("Impressoes", df_ag['impressions'].sum() if 'impressions' in df_ag.columns else 0, "inteiro")
+            with c4:
+                render_kpi("Cliques", df_ag['clicks'].sum() if 'clicks' in df_ag.columns else 0, "inteiro")
+
+            # Tabela por ad group
+            if 'adgroup_name' in df_ag.columns:
+                st.markdown("---")
+                agg = {'spend': 'sum', 'impressions': 'sum', 'clicks': 'sum', 'conversion': 'sum'}
+                eng = {k: 'sum' for k in ['likes', 'shares', 'comments', 'follows'] if k in df_ag.columns}
+                agg.update(eng)
+                grp_cols = ['adgroup_name']
+                if 'campaign_name' in df_ag.columns:
+                    grp_cols.append('campaign_name')
+                if 'optimization_goal' in df_ag.columns:
+                    grp_cols.append('optimization_goal')
+                df_ag_agg = df_ag.groupby(grp_cols, as_index=False, dropna=False).agg(agg)
+                df_ag_agg['CTR %'] = (df_ag_agg['clicks'] / df_ag_agg['impressions'].replace(0, 1) * 100).round(2)
+                df_ag_agg['CPM'] = (df_ag_agg['spend'] / df_ag_agg['impressions'].replace(0, 1) * 1000).round(2)
+                df_ag_agg = df_ag_agg.sort_values('spend', ascending=False)
+                st.dataframe(df_ag_agg, use_container_width=True, hide_index=True)
+            render_explicacao(EXPLICACOES['tiktok_ads']['adgroups'])
+
+    with tab7:
+        df_reach = dados.get('alcance_frequencia', pd.DataFrame())
+        if df_reach.empty:
+            st.info("Sem dados de alcance e frequencia.")
+        else:
+            df_reach = _aplicar_filtro_shopping(df_reach, shopping_sel)
+            st.subheader("Alcance e Frequencia")
+
+            # Filtrar campanhas com dados
+            if 'reach' in df_reach.columns:
+                df_r = df_reach[df_reach['reach'] > 0].copy()
+                if df_r.empty:
+                    st.info("Nenhuma campanha com dados de alcance no periodo.")
+                else:
+                    # KPIs
+                    c1, c2, c3, c4 = st.columns(4)
+                    with c1:
+                        render_kpi("Alcance Total", df_r['reach'].sum(), "inteiro")
+                    with c2:
+                        freq_media = (df_r['impressions'].sum() / df_r['reach'].sum()) if df_r['reach'].sum() > 0 else 0
+                        render_kpi("Frequencia Media", freq_media, "numero")
+                    with c3:
+                        render_kpi("Investimento", df_r['spend'].sum(), "moeda")
+                    with c4:
+                        cpm_reach = (df_r['spend'].sum() / df_r['reach'].sum() * 1000) if df_r['reach'].sum() > 0 else 0
+                        render_kpi("CPM Alcance", cpm_reach, "moeda")
+
+                    # Enriquecer com nomes de campanha
+                    df_meta = dados.get('campanhas_metadata', pd.DataFrame())
+                    if not df_meta.empty and 'campaign_id' in df_r.columns:
+                        meta_cols = df_meta[['campaign_id', 'campaign_name', 'objective_type']].drop_duplicates()
+                        df_r['campaign_id'] = df_r['campaign_id'].astype(str)
+                        meta_cols['campaign_id'] = meta_cols['campaign_id'].astype(str)
+                        df_r = df_r.merge(meta_cols, on='campaign_id', how='left')
+
+                    # Grafico por campanha
+                    st.markdown("---")
+                    st.subheader("Alcance por Campanha")
+                    label_col = 'campaign_name' if 'campaign_name' in df_r.columns else 'campaign_id'
+                    df_r = df_r.sort_values('reach', ascending=True)
+                    fig = px.bar(df_r, x='reach', y=label_col, orientation='h',
+                                 color_discrete_sequence=['#000000'],
+                                 labels={'reach': 'Alcance (pessoas unicas)', label_col: 'Campanha'})
+                    render_chart(fig, key="tt_reach_camp")
+
+                    # Tabela detalhada
+                    st.markdown("---")
+                    show_cols = [c for c in [label_col, 'reach', 'frequency', 'impressions', 'spend', 'clicks'] if c in df_r.columns]
+                    df_show = df_r[show_cols].sort_values('reach', ascending=False)
+                    df_show['CPM Alcance'] = (df_show['spend'] / df_show['reach'].replace(0, 1) * 1000).round(2)
+                    st.dataframe(df_show, use_container_width=True, hide_index=True)
+                render_explicacao(EXPLICACOES['tiktok_ads']['alcance'])
+
+    with tab8:
+        st.subheader("Metadados das Campanhas")
+        df_meta = dados.get('campanhas_metadata', pd.DataFrame())
+        if not df_meta.empty:
+            df_meta = _aplicar_filtro_shopping(df_meta, shopping_sel)
+            # Resumo por status
+            if 'status' in df_meta.columns:
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    render_kpi("Total Campanhas", len(df_meta), "inteiro")
+                with c2:
+                    ativas = len(df_meta[df_meta['status'] == 'ENABLE'])
+                    render_kpi("Ativas", ativas, "inteiro")
+                with c3:
+                    render_kpi("Pausadas/Desativadas", len(df_meta) - ativas, "inteiro")
+
+            # Por objetivo
+            if 'objective_type' in df_meta.columns:
+                st.markdown("---")
+                st.subheader("Campanhas por Objetivo")
+                df_obj = df_meta.groupby('objective_type', as_index=False).size()
+                df_obj.columns = ['Objetivo', 'Quantidade']
+                fig = px.pie(df_obj, values='Quantidade', names='Objetivo', hole=0.4,
+                             color_discrete_sequence=['#000000', '#E6002B', '#666', '#999', '#ccc'])
+                render_chart(fig, key="tt_obj")
+
+            st.markdown("---")
+            st.dataframe(df_meta, use_container_width=True, hide_index=True)
+        else:
+            st.info("Sem metadados de campanhas.")
+
+        st.markdown("---")
+        st.subheader("Metadados dos Ad Groups")
+        df_ag_meta = dados.get('adgroups_metadata', pd.DataFrame())
+        if not df_ag_meta.empty:
+            df_ag_meta = _aplicar_filtro_shopping(df_ag_meta, shopping_sel)
+            st.dataframe(df_ag_meta, use_container_width=True, hide_index=True)
+        else:
+            st.info("Sem metadados de ad groups.")
 
 
 # =============================================================================

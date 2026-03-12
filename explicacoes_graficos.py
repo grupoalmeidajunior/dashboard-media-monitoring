@@ -173,6 +173,30 @@ TIKTOK_VIDEO = {
     'o_que_fazer': 'Priorize os primeiros 2 segundos do video: comece com movimento, texto chamativo ou pergunta. Videos com alta retencao: invista mais verba neles. Teste diferentes hooks (aberturas) para o mesmo conteudo.',
 }
 
+TIKTOK_HORA_DIA = {
+    'o_que_mostra': 'Distribuicao de impressoes, investimento e engajamento por hora do dia (0-23h).',
+    'como_interpretar': 'Identifique os horarios de pico de audiencia. Horarios com muitas impressoes mas pouco engajamento indicam audiencia passiva. Horarios com alto engajamento e baixo custo sao oportunidades.',
+    'o_que_fazer': 'Concentre verba nos horarios de maior engajamento. Para campanhas de alcance, amplie o horario. Para conversao, foque nos picos de atividade.',
+}
+
+TIKTOK_PLATAFORMA = {
+    'o_que_mostra': 'Split de performance entre Android, iPhone e iPad — investimento, impressoes e cliques por sistema operacional.',
+    'como_interpretar': 'Compare o custo por plataforma. Geralmente iPhone tem CPM mais alto mas pode ter melhor conversao. Android tende a ter maior volume mas menor poder de compra.',
+    'o_que_fazer': 'Se uma plataforma tem CPC/CPA muito mais alto sem gerar conversoes proporcionais, considere ajustar lances por dispositivo ou excluir dispositivos de baixa performance.',
+}
+
+TIKTOK_ADGROUPS = {
+    'o_que_mostra': 'Performance detalhada por conjunto de anuncios (ad group) — permite ver qual targeting/segmentacao funciona melhor.',
+    'como_interpretar': 'Compare ad groups da mesma campanha para identificar qual segmentacao gera melhor resultado. Ad groups com alto CPM e baixo engajamento indicam audiencia pouco receptiva.',
+    'o_que_fazer': 'Pause ad groups com CPA alto e realoque verba para os que performam melhor. Duplique ad groups com boa performance e teste variacoes de targeting.',
+}
+
+TIKTOK_ALCANCE = {
+    'o_que_mostra': 'Quantidade de pessoas unicas alcancadas (reach) e frequencia media por campanha.',
+    'como_interpretar': 'Frequencia ideal fica entre 2-4x. Abaixo de 2, a mensagem pode nao estar sendo absorvida. Acima de 5, pode gerar fadiga de anuncio. CPM de alcance mostra o custo real por pessoa impactada.',
+    'o_que_fazer': 'Campanhas com frequencia alta (>5x): amplie o publico ou pause. Campanhas com alcance alto e frequencia baixa (<2): considere aumentar a verba para reforcar a mensagem.',
+}
+
 # =============================================================================
 # GA4 / SEARCH CONSOLE
 # =============================================================================
@@ -354,6 +378,10 @@ EXPLICACOES = {
     'tiktok_ads': {
         'campanhas': TIKTOK_CAMPANHAS,
         'video': TIKTOK_VIDEO,
+        'hora_dia': TIKTOK_HORA_DIA,
+        'plataforma': TIKTOK_PLATAFORMA,
+        'adgroups': TIKTOK_ADGROUPS,
+        'alcance': TIKTOK_ALCANCE,
     },
     'ga4': {
         'fontes': GA4_FONTES,
