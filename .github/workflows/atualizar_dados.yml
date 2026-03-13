@@ -102,7 +102,7 @@ jobs:
 
       - name: Extrair Organico (Instagram + Facebook)
         continue-on-error: true
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: python scripts/extrair_organico.py --dias ${{ inputs.dias || '365' }}
 
       - name: Consolidar dados cross-platform

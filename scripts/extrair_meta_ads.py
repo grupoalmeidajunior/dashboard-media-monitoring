@@ -96,8 +96,21 @@ def _fetch_insights_with_timeout(account, fields, params, timeout=TIMEOUT_POR_CO
             return future.result(timeout=timeout)
 
 
+def _gerar_chunks_meta(data_inicio, data_fim, max_dias=90):
+    """Gera chunks de datas para evitar 'numero excessivo de linhas' da API Meta."""
+    inicio = datetime.strptime(data_inicio, '%Y-%m-%d')
+    fim = datetime.strptime(data_fim, '%Y-%m-%d')
+    chunks = []
+    current = inicio
+    while current <= fim:
+        chunk_end = min(current + timedelta(days=max_dias - 1), fim)
+        chunks.append((current.strftime('%Y-%m-%d'), chunk_end.strftime('%Y-%m-%d')))
+        current = chunk_end + timedelta(days=1)
+    return chunks
+
+
 def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arquivo="campanhas", shopping="", time_increment=1):
-    """Extrai insights generico com breakdowns opcionais."""
+    """Extrai insights generico com breakdowns opcionais. Faz chunking automatico se necessario."""
     fields = [
         'campaign_name', 'campaign_id', 'objective',
         'impressions', 'reach', 'frequency',
@@ -111,23 +124,51 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
         'outbound_clicks',
     ]
 
-    params = {
-        'time_range': {'since': data_inicio, 'until': data_fim},
-        'time_increment': time_increment,
-        'level': 'campaign',
-        'filtering': [{'field': 'campaign.delivery_info', 'operator': 'IN', 'value': ['active', 'completed', 'inactive']}],
-    }
-    if breakdowns:
-        params['breakdowns'] = breakdowns
+    # Determinar se precisa chunking (>90 dias)
+    inicio_dt = datetime.strptime(data_inicio, '%Y-%m-%d')
+    fim_dt = datetime.strptime(data_fim, '%Y-%m-%d')
+    dias_total = (fim_dt - inicio_dt).days
 
-    try:
-        rows_list = _fetch_insights_with_timeout(account, fields, params)
-    except FuturesTimeoutError:
-        print(f"  [Meta Ads] TIMEOUT ({TIMEOUT_POR_CONTA}s) ao buscar {nome_arquivo} para {shopping}")
-        return pd.DataFrame()
-    except Exception as e:
-        print(f"  [Meta Ads] Erro ao buscar {nome_arquivo}: {e}")
-        return pd.DataFrame()
+    if dias_total > 90:
+        # Chunking: dividir em periodos de 90 dias
+        chunks = _gerar_chunks_meta(data_inicio, data_fim, max_dias=90)
+        print(f"    [Meta Ads] {nome_arquivo}/{shopping}: {len(chunks)} chunks ({dias_total} dias)", flush=True)
+        all_rows = []
+        for chunk_inicio, chunk_fim in chunks:
+            params = {
+                'time_range': {'since': chunk_inicio, 'until': chunk_fim},
+                'time_increment': time_increment,
+                'level': 'campaign',
+                'filtering': [{'field': 'campaign.delivery_info', 'operator': 'IN', 'value': ['active', 'completed', 'inactive']}],
+            }
+            if breakdowns:
+                params['breakdowns'] = breakdowns
+            try:
+                rows = _fetch_insights_with_timeout(account, fields, params)
+                all_rows.extend(rows)
+            except FuturesTimeoutError:
+                print(f"    [Meta Ads] TIMEOUT chunk {chunk_inicio}..{chunk_fim} para {shopping}", flush=True)
+            except Exception as e:
+                print(f"    [Meta Ads] Erro chunk {chunk_inicio}..{chunk_fim}: {e}", flush=True)
+        rows_list = all_rows
+    else:
+        params = {
+            'time_range': {'since': data_inicio, 'until': data_fim},
+            'time_increment': time_increment,
+            'level': 'campaign',
+            'filtering': [{'field': 'campaign.delivery_info', 'operator': 'IN', 'value': ['active', 'completed', 'inactive']}],
+        }
+        if breakdowns:
+            params['breakdowns'] = breakdowns
+
+        try:
+            rows_list = _fetch_insights_with_timeout(account, fields, params)
+        except FuturesTimeoutError:
+            print(f"  [Meta Ads] TIMEOUT ({TIMEOUT_POR_CONTA}s) ao buscar {nome_arquivo} para {shopping}")
+            return pd.DataFrame()
+        except Exception as e:
+            print(f"  [Meta Ads] Erro ao buscar {nome_arquivo}: {e}")
+            return pd.DataFrame()
 
     data = []
 
