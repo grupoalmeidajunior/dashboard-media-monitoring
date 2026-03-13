@@ -125,6 +125,7 @@ def extrair_instagram_posts(ig_id, sigla, data_inicio_ts, data_fim_ts):
                     saved = val
                 elif name == "shares":
                     shares = val
+            time.sleep(0.3)  # Rate limiting: evitar throttling da Graph API
         except Exception:
             pass  # Alguns posts antigos nao tem insights
 
@@ -275,6 +276,7 @@ def extrair_facebook_posts(page_id, sigla, data_inicio, data_fim):
                         impressions = val
                     elif name == "post_impressions_unique":
                         reach = val
+            time.sleep(0.3)  # Rate limiting
         except Exception:
             pass
 

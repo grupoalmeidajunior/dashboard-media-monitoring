@@ -16,6 +16,7 @@ import sys
 import json
 import argparse
 import signal
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
@@ -67,36 +68,68 @@ class TimeoutException(Exception):
     pass
 
 
+MAX_RETRIES_API = 3
+RETRY_BACKOFF_BASE = 30  # segundos
+
+
 def _fetch_insights_with_timeout(account, fields, params, timeout=TIMEOUT_POR_CONTA):
-    """Executa get_insights + paginacao com timeout via signal (Linux) ou ThreadPool (Windows)."""
+    """Executa get_insights + paginacao com timeout via signal (Linux) ou ThreadPool (Windows).
+    Inclui retry com backoff para erros transientes da Meta API."""
     def _fetch():
         insights = account.get_insights(fields=fields, params=params)
         return list(insights)
 
-    # signal.alarm so funciona em Linux (GitHub Actions)
-    if hasattr(signal, 'SIGALRM'):
-        def _handler(signum, frame):
-            raise TimeoutException(f"Timeout ({timeout}s)")
+    def _execute_with_timeout():
+        # signal.alarm so funciona em Linux (GitHub Actions)
+        if hasattr(signal, 'SIGALRM'):
+            def _handler(signum, frame):
+                raise TimeoutException(f"Timeout ({timeout}s)")
 
-        old_handler = signal.signal(signal.SIGALRM, _handler)
-        signal.alarm(timeout)
+            old_handler = signal.signal(signal.SIGALRM, _handler)
+            signal.alarm(timeout)
+            try:
+                result = _fetch()
+                signal.alarm(0)
+                return result
+            except TimeoutException:
+                raise FuturesTimeoutError(f"Timeout ({timeout}s)")
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+        else:
+            # Fallback Windows
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_fetch)
+                return future.result(timeout=timeout)
+
+    # Retry com backoff para erros transientes
+    last_error = None
+    for attempt in range(MAX_RETRIES_API):
         try:
-            result = _fetch()
-            signal.alarm(0)
-            return result
-        except TimeoutException:
-            raise FuturesTimeoutError(f"Timeout ({timeout}s)")
-        finally:
-            signal.alarm(0)
-            signal.signal(signal.SIGALRM, old_handler)
-    else:
-        # Fallback Windows
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(_fetch)
-            return future.result(timeout=timeout)
+            return _execute_with_timeout()
+        except FuturesTimeoutError:
+            raise  # Timeout nao faz retry
+        except Exception as e:
+            err_str = str(e)
+            # Erros transientes: rate limit (code 4), unknown error (code 1/2), too many rows (1487534)
+            is_transient = any(x in err_str for x in [
+                'is_transient', 'Application request limit',
+                'unknown error', 'unexpected error',
+                'Please reduce the amount of data',
+                'error_subcode', 'An unknown error',
+            ])
+            if is_transient and attempt < MAX_RETRIES_API - 1:
+                wait = RETRY_BACKOFF_BASE * (2 ** attempt)  # 30s, 60s, 120s
+                print(f"    [Meta Ads] Erro transiente (tentativa {attempt + 1}/{MAX_RETRIES_API}), "
+                      f"aguardando {wait}s: {err_str[:120]}", flush=True)
+                time.sleep(wait)
+                last_error = e
+                continue
+            raise
+    raise last_error
 
 
-def _gerar_chunks_meta(data_inicio, data_fim, max_dias=90):
+def _gerar_chunks_meta(data_inicio, data_fim, max_dias=30):
     """Gera chunks de datas para evitar 'numero excessivo de linhas' da API Meta."""
     inicio = datetime.strptime(data_inicio, '%Y-%m-%d')
     fim = datetime.strptime(data_fim, '%Y-%m-%d')
@@ -129,9 +162,11 @@ def extrair_insights(account, data_inicio, data_fim, breakdowns=None, nome_arqui
     fim_dt = datetime.strptime(data_fim, '%Y-%m-%d')
     dias_total = (fim_dt - inicio_dt).days
 
-    if dias_total > 90:
-        # Chunking: dividir em periodos de 90 dias
-        chunks = _gerar_chunks_meta(data_inicio, data_fim, max_dias=90)
+    # Chunk menor para diario (mais linhas), maior para mensal
+    chunk_max = 30 if time_increment == 1 else 90
+    if dias_total > chunk_max:
+        # Chunking: dividir em periodos para evitar rate limiting
+        chunks = _gerar_chunks_meta(data_inicio, data_fim, max_dias=chunk_max)
         print(f"    [Meta Ads] {nome_arquivo}/{shopping}: {len(chunks)} chunks ({dias_total} dias)", flush=True)
         all_rows = []
         for chunk_inicio, chunk_fim in chunks:
@@ -265,7 +300,7 @@ def extrair_todas_contas(accounts, data_inicio, data_fim):
 
     for tipo in tipos_extracao:
         dfs = []
-        for sigla, account in accounts.items():
+        for idx, (sigla, account) in enumerate(accounts.items()):
             print(f"  [Meta Ads] {sigla} → {tipo['nome']}...", flush=True)
             df = extrair_insights(
                 account, data_inicio, data_fim,
@@ -276,6 +311,9 @@ def extrair_todas_contas(accounts, data_inicio, data_fim):
             )
             if not df.empty:
                 dfs.append(df)
+            # Delay entre contas para evitar rate limiting
+            if idx < len(accounts) - 1:
+                time.sleep(2)
 
         if dfs:
             df_final = pd.concat(dfs, ignore_index=True)

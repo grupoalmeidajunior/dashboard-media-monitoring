@@ -75,7 +75,7 @@ jobs:
 
       - name: Extrair Meta Ads
         continue-on-error: true
-        timeout-minutes: 45
+        timeout-minutes: 60
         env:
           PYTHONUNBUFFERED: "1"
         run: python scripts/extrair_meta_ads.py --dias ${{ inputs.dias || '365' }}
@@ -103,7 +103,7 @@ jobs:
       - name: Extrair Organico (Instagram + Facebook)
         continue-on-error: true
         timeout-minutes: 30
-        run: python scripts/extrair_organico.py --dias ${{ inputs.dias || '365' }}
+        run: python scripts/extrair_organico.py --dias ${{ inputs.dias || '90' }}
 
       - name: Consolidar dados cross-platform
         run: python scripts/consolidar_cross_platform.py
