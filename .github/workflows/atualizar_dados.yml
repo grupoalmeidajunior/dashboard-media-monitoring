@@ -44,6 +44,7 @@ jobs:
       SEARCH_CONSOLE_SITE_URL: ${{ secrets.SEARCH_CONSOLE_SITE_URL }}
       # Google Business Profile
       GOOGLE_BUSINESS_ACCOUNT_ID: ${{ secrets.GOOGLE_BUSINESS_ACCOUNT_ID }}
+      GOOGLE_BUSINESS_REFRESH_TOKEN: ${{ secrets.GOOGLE_BUSINESS_REFRESH_TOKEN }}
 
     steps:
       - name: Checkout repositorio

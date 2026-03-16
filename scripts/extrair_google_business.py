@@ -3,16 +3,18 @@ Extrator Google Business Profile API
 Gera CSVs em Dados/Google_Business/ com metricas de cada shopping
 
 Metricas extraidas:
-  - Acoes: rotas, ligacoes, cliques no site
-  - Buscas: direta, descoberta, branded
-  - Visualizacoes: Maps vs Search
+  - Acoes: rotas, ligacoes, cliques no site, reservas, mensagens
+  - Impressoes: Maps (desktop/mobile) e Search (desktop/mobile)
+  - Buscas: keywords de busca e impressoes mensais
   - Fotos: visualizacoes de fotos
 
 Requer:
   - google-api-python-client>=2.100.0
-  - Service Account com acesso ao Google Business Profile
+  - google-auth>=2.0.0
+  - OAuth2 credentials (GBP nao suporta Service Account)
   - GOOGLE_BUSINESS_ACCOUNT_ID (account ID)
-  - GA4_SERVICE_ACCOUNT_JSON (mesma SA do GA4, base64)
+  - GOOGLE_ADS_CLIENT_ID, GOOGLE_ADS_CLIENT_SECRET (OAuth app)
+  - GOOGLE_BUSINESS_REFRESH_TOKEN (refresh token com escopo business.manage)
 
 Uso:
   python scripts/extrair_google_business.py [--dias 90]
@@ -30,7 +32,7 @@ import pandas as pd
 
 try:
     from googleapiclient.discovery import build
-    from google.oauth2.service_account import Credentials
+    from google.oauth2.credentials import Credentials
 except ImportError:
     print("[ERRO] google-api-python-client nao instalado.")
     sys.exit(1)
@@ -39,23 +41,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "Dados" / "Google_Business"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-SCOPES = ['https://www.googleapis.com/auth/business.manage']
+
+def _get_credentials():
+    """Cria credenciais OAuth2 para Google Business Profile."""
+    return Credentials(
+        token=None,
+        refresh_token=os.environ["GOOGLE_BUSINESS_REFRESH_TOKEN"],
+        client_id=os.environ["GOOGLE_ADS_CLIENT_ID"],
+        client_secret=os.environ["GOOGLE_ADS_CLIENT_SECRET"],
+        token_uri="https://oauth2.googleapis.com/token",
+    )
 
 
 def get_service():
-    """Cria servico Google Business Profile usando Service Account."""
-    sa_json_b64 = os.environ["GA4_SERVICE_ACCOUNT_JSON"]
-    sa_info = json.loads(base64.b64decode(sa_json_b64))
-    credentials = Credentials.from_service_account_info(sa_info, scopes=SCOPES)
-    return build('mybusinessbusinessinformation', 'v1', credentials=credentials)
+    """Cria servico Google Business Profile (Business Information)."""
+    return build('mybusinessbusinessinformation', 'v1', credentials=_get_credentials())
 
 
 def get_performance_service():
     """Cria servico de Performance (metricas)."""
-    sa_json_b64 = os.environ["GA4_SERVICE_ACCOUNT_JSON"]
-    sa_info = json.loads(base64.b64decode(sa_json_b64))
-    credentials = Credentials.from_service_account_info(sa_info, scopes=SCOPES)
-    return build('businessprofileperformance', 'v1', credentials=credentials)
+    return build('businessprofileperformance', 'v1', credentials=_get_credentials())
 
 
 def listar_locations(service, account_id):
@@ -87,6 +92,10 @@ def extrair_metricas_diarias(perf_service, location_name, data_inicio, data_fim)
                     "BUSINESS_BOOKINGS",
                     "BUSINESS_CONVERSATIONS",
                     "BUSINESS_FOOD_ORDERS",
+                    "BUSINESS_IMPRESSIONS_DESKTOP_MAPS",
+                    "BUSINESS_IMPRESSIONS_MOBILE_MAPS",
+                    "BUSINESS_IMPRESSIONS_DESKTOP_SEARCH",
+                    "BUSINESS_IMPRESSIONS_MOBILE_SEARCH",
                 ],
                 "timeRange": {
                     "startDate": {
@@ -211,6 +220,10 @@ def main():
             'BUSINESS_BOOKINGS': 'reservas',
             'BUSINESS_CONVERSATIONS': 'mensagens',
             'BUSINESS_FOOD_ORDERS': 'pedidos_comida',
+            'BUSINESS_IMPRESSIONS_DESKTOP_MAPS': 'impressoes_maps_desktop',
+            'BUSINESS_IMPRESSIONS_MOBILE_MAPS': 'impressoes_maps_mobile',
+            'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH': 'impressoes_search_desktop',
+            'BUSINESS_IMPRESSIONS_MOBILE_SEARCH': 'impressoes_search_mobile',
         }
         df_pivot = df_pivot.rename(columns=rename_map)
         df_pivot.to_csv(OUTPUT_DIR / "metricas_diarias.csv", index=False, encoding='utf-8-sig')
