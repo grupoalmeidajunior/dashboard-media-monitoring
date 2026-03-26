@@ -151,6 +151,12 @@ Dashboard_Media/
 - Sessao 7 (cont.): Organico — delay 0.3s entre chamadas de insights por post para evitar throttling Graph API
 - Sessao 7 (cont.): Organico — default workflow reduzido de 365 para 90 dias (IG account insights limitado a 30d, posts antigos nao mudam)
 - Sessao 7 (cont.): Meta Ads — default workflow reduzido de 365 para 180 dias (365d causava timeout >60min com 8 contas)
+- Sessao 7 (cont.): Fix conflitos merge no commit/push — fetch+reset soft ao inves de pull rebase (CSVs regenerados)
+- Sessao 7 (cont.): Fix WhatsApp pipeline Perfil de Cliente — Python tool cache corrompido no actions-runner-perfil
+
+- Sessao 8 (17/03/2026): Pagina Comparativo — substituir ROAS por CPM para modelo O2O
+- Sessao 8 (cont.): Grafico ROAS → CPM por plataforma. Radar: ROAS → Eficiencia CPM (invertido)
+- Sessao 8 (cont.): Ranking: CPM + CPA + CTR + Conversoes (sem ROAS). TikTok agora comparavel
 
 ## Proximos Passos (ao retomar)
 1. **TikTok Ads:** Aprovar app para demais shoppings (BS, CS, NK, NR, GS) e adicionar ao TIKTOK_ADS_CONFIG
