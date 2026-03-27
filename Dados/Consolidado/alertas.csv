@@ -1,6 +1,6 @@
 ﻿plataforma,tipo,severidade,mensagem,metrica,valor_atual,valor_media
-Meta Ads,saturacao_ctr,Media,"CTR em queda consistente (0.40% medio, tendencia negativa)",ctr,0.1821,0.3964284898449349
-Google Ads,anomalia_cpa,Alta,CPA subiu 28181% vs media movel 7d,cpa,248.2910058,0.8779564461427276
-Google Ads,anomalia_ctr,Media,CTR caiu 38% vs media movel 7d,ctr,0.0264548638849628,0.04266283891786513
-Meta Ads,anomalia_custo,Media,CUSTO subiu 35% vs media movel 7d,custo,1327.0400000000002,985.1857142857143
-Meta Ads,anomalia_ctr,Media,CTR subiu 42% vs media movel 7d,ctr,0.1821,0.1283828163794682
+Meta Ads,saturacao_ctr,Media,"CTR em queda consistente (0.39% medio, tendencia negativa)",ctr,0.2351566176470588,0.3931094458857351
+Google Ads,anomalia_custo,Media,CUSTO subiu 38% vs media movel 7d,custo,1635.399676,1181.1347989999997
+Google Ads,anomalia_cpa,Alta,CPA subiu 4421% vs media movel 7d,cpa,1635.399676,36.172190673757854
+Google Ads,anomalia_ctr,Media,CTR caiu 44% vs media movel 7d,ctr,0.0226820548690448,0.04046453070752077
+Meta Ads,anomalia_ctr,Alta,CTR subiu 71% vs media movel 7d,ctr,0.2351566176470588,0.1373391925699444
