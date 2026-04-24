@@ -4,7 +4,7 @@
 Painel unificado de performance de midia digital que consolida dados de Google Ads, Meta Ads (Facebook/Instagram), TikTok Ads, GA4 e Google Search Console.
 
 ## Repositorio
-- **GitHub:** https://github.com/carlosgravi/dashboard-media-monitoring
+- **GitHub:** https://github.com/grupoalmeidajunior/dashboard-media-monitoring
 - **Deploy:** https://dashboard-media-monitoring.streamlit.app
 
 ## Estrutura
