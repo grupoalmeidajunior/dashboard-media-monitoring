@@ -140,15 +140,14 @@ jobs:
           Co-Authored-By: GitHub Actions <actions@github.com>"
           git push origin main
 
-  # Job de notificacao WhatsApp (roda no self-hosted onde esta o gateway)
-  notificar-whatsapp:
-    runs-on: self-hosted
+  # Job de notificacao Teams (ubuntu-latest, sem dependencia de self-hosted)
+  notificar-teams:
+    runs-on: ubuntu-latest
     needs: extrair-dados
     if: always()
 
     env:
-      WA_GATEWAY_URL: "http://localhost:3001"
-      WA_GROUP_ID: "120363408855201409@g.us"
+      TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
 
     steps:
       - name: Checkout repositorio
@@ -160,15 +159,12 @@ jobs:
           python-version: '3.11'
 
       - name: Instalar dependencias
-        shell: powershell
         run: pip install requests --quiet
 
       - name: Notificar sucesso
         if: needs.extrair-dados.result == 'success'
-        shell: powershell
-        run: python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status sucesso --detalhes "Dados de Google Ads, Meta Ads, TikTok Ads, GA4 e Search Console atualizados"
+        run: python scripts/notificar_teams.py --dashboard "Media Monitoring" --status sucesso --detalhes "Dados de Google Ads, Meta Ads, TikTok Ads, GA4 e Search Console atualizados"
 
       - name: Notificar erro
         if: needs.extrair-dados.result == 'failure'
-        shell: powershell
-        run: python scripts/notificar_whatsapp.py --dashboard "Media Monitoring" --status erro
+        run: python scripts/notificar_teams.py --dashboard "Media Monitoring" --status erro
