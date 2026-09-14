@@ -6,7 +6,6 @@
 20251005,Almeida Junior,/pt-br/,951.0,889.0,950.0,0.807570977917981,22.831343710830705,121.0,0.0,0.19242902208201892
 20250920,Almeida Junior,/pt-br/,950.0,886.0,940.0,0.8557894736842105,15.436732811578946,92.0,0.0,0.14421052631578948
 20250914,Almeida Junior,/pt-br/,947.0,887.0,960.0,0.8933474128827877,25.050487175290392,32.0,0.0,0.10665258711721225
-20250913,Almeida Junior,/pt-br/,946.0,905.0,956.0,0.9175475687103594,13.791684307610993,33.0,0.0,0.0824524312896406
 20250921,Almeida Junior,/pt-br/,931.0,877.0,919.0,0.8195488721804511,9.757294071965628,110.0,0.0,0.18045112781954886
 20250928,Almeida Junior,/pt-br/,877.0,836.0,875.0,0.8118586088939567,18.41569509122007,85.0,0.0,0.18814139110604333
 20251109,Almeida Junior,/pt-br/,857.0,825.0,860.0,0.822637106184364,18.45865129404901,96.0,0.0,0.17736289381563594
@@ -26,6 +25,7 @@
 20250924,Almeida Junior,/pt-br/,602.0,512.0,598.0,0.7641196013289037,49.742139787375415,48.0,0.0,0.23588039867109634
 20250919,Almeida Junior,/pt-br/,591.0,544.0,586.0,0.7749576988155669,43.03381966159053,32.0,0.0,0.22504230118443316
 20251018,AJFans Clientes - Almeida Junior,/pt-br/ajfans/,591.0,539.0,595.0,0.9509306260575296,15.039639230118443,1.0,0.0,0.049069373942470386
+20260913,Almeida Junior,/pt-br/,586.0,573.0,592.0,0.658703071672355,22.234294192832763,181.0,0.0,0.3412969283276451
 20251020,Almeida Junior,/pt-br/,579.0,529.0,607.0,0.7288428324697754,25.488235321243522,37.0,0.0,0.2711571675302245
 20250918,Almeida Junior,/pt-br/,572.0,495.0,570.0,0.8041958041958042,51.821903732517484,28.0,0.0,0.1958041958041958
 20251011,AJFans Clientes - Almeida Junior,/pt-br/ajfans/,572.0,513.0,579.0,0.9475524475524476,16.373873919580422,0.0,0.0,0.05244755244755245
@@ -47,6 +47,7 @@
 20260307,Almeida Junior,/pt-br/,488.0,450.0,495.0,0.7090163934426229,23.921836053278692,111.0,0.0,0.29098360655737704
 20260502,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,487.0,474.0,610.0,0.5975359342915811,46.09393575564682,0.0,0.0,0.4024640657084189
 20260321,Almeida Junior,/pt-br/,480.0,436.0,475.0,0.6958333333333333,23.740538547916668,115.0,0.0,0.30416666666666664
+20260913,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,480.0,457.0,652.0,0.5729166666666666,54.877682972916666,1.0,0.0,0.4270833333333333
 20251010,AJFans Clientes - Almeida Junior,/pt-br/ajfans/,474.0,397.0,474.0,0.8945147679324894,31.856086263713077,0.0,0.0,0.10548523206751055
 20260308,Almeida Junior,/pt-br/,474.0,449.0,478.0,0.7151898734177216,13.6521599092827,105.0,0.0,0.2848101265822785
 20251020,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,469.0,454.0,548.0,0.5181236673773987,72.04217628997867,11.0,0.0,0.48187633262260127
@@ -231,7 +232,6 @@
 20250923,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,228.0,210.0,309.0,0.7631578947368421,73.59932596052631,0.0,0.0,0.23684210526315788
 20260720,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,228.0,222.0,275.0,0.5789473684210527,53.60295852192983,0.0,0.0,0.42105263157894735
 20260727,Almeida Junior,/pt-br/,228.0,209.0,239.0,0.5614035087719298,40.971306508771924,47.0,0.0,0.43859649122807015
-20250913,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,227.0,213.0,274.0,0.5991189427312775,43.57179688986785,0.0,0.0,0.4008810572687225
 20260106,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,227.0,221.0,274.0,0.5594713656387665,43.11610568281938,0.0,0.0,0.44052863436123346
 20260117,Almeida Junior,/pt-br/,227.0,218.0,228.0,0.748898678414097,39.81498063876653,45.0,0.0,0.2511013215859031
 20260606,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,227.0,225.0,252.0,0.8722466960352423,4.581891325991189,0.0,0.0,0.1277533039647577
@@ -240,7 +240,7 @@
 20260525,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,225.0,224.0,250.0,0.8577777777777778,5.526454942222222,1.0,0.0,0.14222222222222222
 20260529,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,225.0,223.0,246.0,0.9022222222222223,3.511856302222222,0.0,0.0,0.09777777777777778
 20251016,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,224.0,216.0,246.0,0.6830357142857143,72.04114575446428,4.0,0.0,0.3169642857142857
-20251020,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,224.0,217.0,264.0,0.5267857142857143,85.87024315178571,4.0,0.0,0.4732142857142857
+20251020,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,224.0,217.0,264.0,0.5267857142857143,85.87024315178573,4.0,0.0,0.4732142857142857
 20251014,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,223.0,216.0,233.0,0.6143497757847534,93.13481352466368,10.0,0.0,0.38565022421524664
 20260201,Almeida Junior,/pt-br/,222.0,216.0,238.0,0.7207207207207207,30.500918999999996,41.0,0.0,0.27927927927927926
 20251013,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,221.0,211.0,226.0,0.7013574660633484,59.07678212669684,0.0,0.0,0.2986425339366516
@@ -464,7 +464,7 @@
 20251015,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,145.0,142.0,150.0,0.7103448275862069,65.42625427586208,3.0,0.0,0.2896551724137931
 20251016,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,145.0,141.0,152.0,0.6344827586206897,44.59482060689655,0.0,0.0,0.36551724137931035
 20260121,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,145.0,141.0,176.0,0.46206896551724136,139.96457104827587,0.0,0.0,0.5379310344827586
-20251006,Almeida Junior,/pt-br/,144.0,130.0,142.0,0.5625,65.63305772222223,7.0,0.0,0.4375
+20251006,Almeida Junior,/pt-br/,144.0,130.0,142.0,0.5625,65.63305772222222,7.0,0.0,0.4375
 20251013,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,144.0,137.0,153.0,0.6458333333333334,53.619890229166664,1.0,0.0,0.3541666666666667
 20251218,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,144.0,137.0,169.0,0.5277777777777778,73.42318369444445,0.0,0.0,0.4722222222222222
 20260410,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,144.0,144.0,148.0,0.9513888888888888,11.830117159722223,0.0,0.0,0.04861111111111111
@@ -581,7 +581,7 @@
 20250926,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,119.0,113.0,169.0,0.680672268907563,100.98233053781513,1.0,0.0,0.31932773109243695
 20251005,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,119.0,118.0,120.0,0.9495798319327731,4.2283556974789915,0.0,0.0,0.05042016806722689
 20260401,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,119.0,112.0,143.0,0.5462184873949579,95.49945385714287,0.0,0.0,0.453781512605042
-20251003,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,118.0,118.0,131.0,0.5508474576271186,87.0846873898305,1.0,0.0,0.4491525423728814
+20251003,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,118.0,118.0,131.0,0.5508474576271186,87.08468738983049,1.0,0.0,0.4491525423728814
 20260422,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,118.0,118.0,127.0,0.8559322033898306,5.430338974576271,0.0,0.0,0.1440677966101695
 20260528,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,118.0,114.0,137.0,0.6101694915254238,42.457429305084744,0.0,0.0,0.3898305084745763
 20260622,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,118.0,113.0,137.0,0.5423728813559322,62.1851616440678,0.0,0.0,0.4576271186440678
@@ -1056,7 +1056,7 @@
 20251001,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,61.0,57.0,70.0,0.3114754098360656,163.3930076393443,0.0,0.0,0.6885245901639344
 20251002,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,61.0,55.0,70.0,0.2459016393442623,87.61433527868853,0.0,0.0,0.7540983606557377
 20251017,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,61.0,60.0,64.0,0.7704918032786885,38.302104786885245,0.0,0.0,0.22950819672131148
-20251018,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,61.0,58.0,66.0,0.4918032786885246,28.381838065573767,1.0,0.0,0.5081967213114754
+20251018,Nossos shoppings - Almeida Junior,/pt-br/nossos-shoppings/,61.0,58.0,66.0,0.4918032786885246,28.38183806557377,1.0,0.0,0.5081967213114754
 20251024,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,61.0,61.0,64.0,0.6065573770491803,49.290879311475415,1.0,0.0,0.39344262295081966
 20251027,Almeida Junior,/pt-br/,61.0,57.0,75.0,0.18032786885245902,218.3952341803279,0.0,0.0,0.819672131147541
 20251031,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,61.0,61.0,102.0,0.36065573770491804,15.77614837704918,0.0,0.0,0.639344262295082
@@ -1429,7 +1429,7 @@
 20260531,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,36.0,35.0,41.0,0.2777777777777778,102.52692675,0.0,0.0,0.7222222222222222
 20260617,Almeida Junior sorteia seis carros híbridos para o Dia das Mães - Almeida Junior,/pt-br/campanha-dia-das-maes-e-namorados-jaecoo-7-luxury/,36.0,34.0,41.0,0.1111111111111111,83.49176197222222,0.0,0.0,0.8888888888888888
 20250924,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,35.0,35.0,38.0,0.8285714285714286,8.644097314285714,0.0,0.0,0.17142857142857143
-20250929,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,35.0,33.0,36.0,0.8,33.61342994285714,0.0,0.0,0.2
+20250929,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,35.0,33.0,36.0,0.8,33.613429942857145,0.0,0.0,0.2
 20251118,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,35.0,34.0,37.0,0.5142857142857142,29.0424708,1.0,0.0,0.4857142857142857
 20251119,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,35.0,35.0,41.0,0.45714285714285713,76.3383429142857,2.0,0.0,0.5428571428571428
 20251129,Mirage - Almeida Junior,/pt-br/mirage/,35.0,23.0,38.0,0.45714285714285713,340.7052414285714,0.0,0.0,0.5428571428571428
@@ -1572,6 +1572,7 @@
 20260728,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,30.0,29.0,33.0,0.6666666666666666,77.48193846666668,1.0,0.0,0.3333333333333333
 20260729,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,30.0,30.0,35.0,0.5666666666666667,45.25680213333333,1.0,0.0,0.43333333333333335
 20260808,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,30.0,30.0,33.0,0.7666666666666667,39.44832423333333,1.0,0.0,0.23333333333333334
+20260913,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,30.0,30.0,34.0,0.5333333333333333,57.0666743,0.0,0.0,0.4666666666666667
 20250914,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,29.0,29.0,59.0,0.3103448275862069,32.37293962068966,0.0,0.0,0.6896551724137931
 20250916,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,29.0,29.0,51.0,0.10344827586206896,35.60772020689655,3.0,0.0,0.896551724137931
 20250921,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,29.0,28.0,47.0,0.3448275862068966,16.066320310344825,0.0,0.0,0.6551724137931034
@@ -1635,7 +1636,6 @@
 20260803,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,28.0,27.0,29.0,0.42857142857142855,63.833933928571426,1.0,0.0,0.5714285714285714
 20260808,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,28.0,28.0,28.0,0.8571428571428571,4.837558321428571,0.0,0.0,0.14285714285714285
 20260830,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,28.0,27.0,32.0,0.39285714285714285,48.24150460714286,2.0,0.0,0.6071428571428571
-20250913,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,27.0,27.0,50.0,0.18518518518518517,13.503637703703703,0.0,0.0,0.8148148148148148
 20250916,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,27.0,26.0,60.0,0.14814814814814814,61.165726444444445,5.0,0.0,0.8518518518518519
 20250925,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,27.0,25.0,30.0,0.48148148148148145,58.18313877777778,0.0,0.0,0.5185185185185185
 20250930,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,27.0,27.0,28.0,0.7777777777777778,28.638832407407406,0.0,0.0,0.2222222222222222
@@ -1698,6 +1698,8 @@
 20260730,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,26.0,25.0,28.0,0.6153846153846154,66.98800488461538,0.0,0.0,0.38461538461538464
 20260731,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,26.0,25.0,24.0,0.8076923076923077,7.881912115384615,0.0,0.0,0.19230769230769232
 20260809,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,26.0,26.0,26.0,0.6538461538461539,18.23761373076923,1.0,0.0,0.34615384615384615
+20260913,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,26.0,25.0,25.0,0.6923076923076923,17.045376153846153,0.0,0.0,0.3076923076923077
+20260913,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,26.0,26.0,30.0,0.6538461538461539,23.186531615384617,0.0,0.0,0.34615384615384615
 20251031,AJFans Clientes - Almeida Junior,/pt-br/ajfans/,25.0,23.0,25.0,0.84,55.68358148,0.0,0.0,0.16
 20251116,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,25.0,25.0,53.0,0.12,62.776186280000005,0.0,0.0,0.88
 20251129,AJ Mídia – Almeida Junior | Mídia Digital em Condomínios,/pt-br/ajmidia/,25.0,25.0,27.0,0.88,2.55775976,0.0,0.0,0.12
@@ -1728,7 +1730,6 @@
 20260901,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,25.0,22.0,44.0,0.24,48.05607408,12.0,0.0,0.76
 20260906,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,25.0,23.0,24.0,0.48,31.4142182,0.0,0.0,0.52
 20260912,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,25.0,25.0,25.0,0.68,90.3506726,0.0,0.0,0.32
-20250913,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,24.0,24.0,68.0,0.125,20.502154833333336,0.0,0.0,0.875
 20251003,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,24.0,24.0,27.0,0.6666666666666666,25.03576204166667,1.0,0.0,0.3333333333333333
 20251017,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,24.0,24.0,26.0,0.6666666666666666,177.8920554166667,0.0,0.0,0.3333333333333333
 20251023,AJFans Clientes - Almeida Junior,/pt-br/ajfans/,24.0,23.0,24.0,0.9166666666666666,97.25970058333333,0.0,0.0,0.08333333333333333
@@ -1806,6 +1807,7 @@
 20260809,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,23.0,23.0,25.0,0.8260869565217391,4.486785260869565,1.0,0.0,0.17391304347826086
 20260909,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,23.0,23.0,24.0,0.6521739130434783,14.248537260869567,0.0,0.0,0.34782608695652173
 20260910,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,23.0,22.0,23.0,0.6086956521739131,14.773656913043478,0.0,0.0,0.391304347826087
+20260913,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,23.0,21.0,25.0,0.21739130434782608,80.27816865217392,2.0,0.0,0.782608695652174
 20250914,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,22.0,22.0,27.0,0.36363636363636365,59.11854968181819,3.0,0.0,0.6363636363636364
 20250915,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,22.0,20.0,23.0,0.5,86.2119135,0.0,0.0,0.5
 20250917,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,22.0,22.0,49.0,0.045454545454545456,96.05694063636365,1.0,0.0,0.9545454545454546
@@ -1910,7 +1912,6 @@
 20260908,Nossa história - Almeida Junior,/pt-br/nossa-historia/,21.0,17.0,24.0,0.09523809523809523,164.57810714285714,0.0,0.0,0.9047619047619048
 20260910,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,21.0,21.0,21.0,0.7142857142857143,18.476986571428572,0.0,0.0,0.2857142857142857
 20260911,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,21.0,20.0,21.0,0.7142857142857143,29.674857333333335,0.0,0.0,0.2857142857142857
-20250913,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,20.0,18.0,21.0,0.35,77.80474275,1.0,0.0,0.65
 20250925,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,20.0,20.0,38.0,0.05,47.852648,1.0,0.0,0.95
 20250926,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,20.0,20.0,40.0,0.1,60.57760325,0.0,0.0,0.9
 20250929,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,20.0,20.0,29.0,0.5,74.44794664999999,0.0,0.0,0.5
@@ -2232,7 +2233,7 @@
 20251006,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,16.0,16.0,16.0,0.3125,39.279749124999995,0.0,0.0,0.6875
 20251012,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,16.0,16.0,35.0,0.1875,52.4457216875,0.0,0.0,0.8125
 20251018,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,16.0,16.0,31.0,0.0625,13.755261625,0.0,0.0,0.9375
-20251018,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,16.0,10.0,12.0,0.5625,34.761596562499996,1.0,0.0,0.4375
+20251018,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,16.0,10.0,12.0,0.5625,34.7615965625,1.0,0.0,0.4375
 20251019,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,16.0,14.0,16.0,0.3125,44.5386201875,0.0,0.0,0.6875
 20251021,Nossa história - Almeida Junior,/pt-br/nossa-historia/,16.0,15.0,15.0,0.1875,91.8745668125,2.0,0.0,0.8125
 20251023,Nossa história - Almeida Junior,/pt-br/nossa-historia/,16.0,13.0,17.0,0.25,110.0395285,0.0,0.0,0.75
@@ -2464,7 +2465,6 @@
 20260903,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,15.0,15.0,18.0,0.4666666666666667,56.898159,0.0,0.0,0.5333333333333333
 20260907,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,15.0,15.0,15.0,0.5333333333333333,130.49759813333333,0.0,0.0,0.4666666666666667
 20260908,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,15.0,14.0,19.0,0.2,137.1099592,0.0,0.0,0.8
-20250913,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,14.0,14.0,25.0,0.21428571428571427,24.425347357142858,1.0,0.0,0.7857142857142857
 20250915,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,14.0,14.0,15.0,0.8571428571428571,48.88751557142857,0.0,0.0,0.14285714285714285
 20250917,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,14.0,14.0,24.0,0.2857142857142857,33.6603285,0.0,0.0,0.7142857142857143
 20250926,Contato - Almeida Junior,/pt-br/contato/,14.0,13.0,12.0,0.21428571428571427,170.83798278571427,2.0,0.0,0.7857142857142857
@@ -2624,8 +2624,6 @@
 20260910,Nossa história - Almeida Junior,/pt-br/nossa-historia/,14.0,14.0,17.0,0.0,202.0096335,0.0,0.0,1.0
 20260912,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,14.0,13.0,15.0,0.35714285714285715,1064.8407789999999,0.0,0.0,0.6428571428571429
 20260912,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,14.0,14.0,14.0,0.6428571428571429,14.155361857142859,0.0,0.0,0.35714285714285715
-20250913,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,13.0,13.0,14.0,0.7692307692307693,78.33495792307693,0.0,0.0,0.23076923076923078
-20250913,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,13.0,12.0,22.0,0.15384615384615385,28.136868307692307,2.0,0.0,0.8461538461538461
 20250915,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,13.0,12.0,14.0,0.7692307692307693,50.18668392307692,0.0,0.0,0.23076923076923078
 20250916,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,13.0,13.0,23.0,0.23076923076923078,114.90814707692309,0.0,0.0,0.7692307692307693
 20250918,Nossa história - Almeida Junior,/pt-br/nossa-historia/,13.0,13.0,12.0,0.3076923076923077,14.018896692307692,0.0,0.0,0.6923076923076923
@@ -2649,7 +2647,7 @@
 20251022,Contato - Almeida Junior,/pt-br/contato/,13.0,12.0,11.0,0.15384615384615385,131.37414207692308,3.0,0.0,0.8461538461538461
 20251026,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,13.0,13.0,14.0,0.23076923076923078,103.88700946153845,0.0,0.0,0.7692307692307693
 20251027,Contato - Almeida Junior,/pt-br/contato/,13.0,13.0,13.0,0.0,87.30644469230768,2.0,0.0,1.0
-20251028,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,13.0,13.0,25.0,0.23076923076923078,69.89841038461539,0.0,0.0,0.7692307692307693
+20251028,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,13.0,13.0,25.0,0.23076923076923078,69.89841038461537,0.0,0.0,0.7692307692307693
 20251029,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,13.0,12.0,13.0,0.3076923076923077,271.53621876923074,7.0,0.0,0.6923076923076923
 20251030,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,13.0,11.0,15.0,0.23076923076923078,151.91906976923076,1.0,0.0,0.7692307692307693
 20251103,AJFans - O shopping na sua mão,/pt-br/app-ajfans/,13.0,12.0,14.0,0.8461538461538461,14.628901923076922,0.0,0.0,0.15384615384615385
@@ -2823,6 +2821,8 @@
 20260904,Continente Shopping - Franquias - Almeida Junior,/pt-br/franquias/continente-shopping/,13.0,13.0,13.0,0.3076923076923077,76.18415569230768,0.0,0.0,0.6923076923076923
 20260904,Nossa história - Almeida Junior,/pt-br/nossa-historia/,13.0,12.0,15.0,0.07692307692307693,273.32176676923075,0.0,0.0,0.9230769230769231
 20260909,Contato - Almeida Junior,/pt-br/contato/,13.0,13.0,13.0,0.23076923076923078,122.7346820769231,2.0,0.0,0.7692307692307693
+20260913,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,13.0,13.0,15.0,0.7692307692307693,11.264124461538461,0.0,0.0,0.23076923076923078
+20260913,Nossa história - Almeida Junior,/pt-br/nossa-historia/,13.0,13.0,15.0,0.07692307692307693,44.48808361538462,1.0,0.0,0.9230769230769231
 20250916,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,12.0,11.0,12.0,0.08333333333333333,42.337705,7.0,0.0,0.9166666666666666
 20250919,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,12.0,11.0,23.0,0.16666666666666666,166.46030808333333,0.0,0.0,0.8333333333333334
 20250920,AJFans Clientes - Cadastro existente - Almeida Junior,/pt-br/app-ajfans-cadastrado-existe/,12.0,12.0,12.0,0.0,208.1690565,2.0,0.0,1.0
@@ -3034,7 +3034,6 @@
 20260909,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,12.0,11.0,14.0,0.4166666666666667,22.238713166666667,0.0,0.0,0.5833333333333334
 20260911,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,12.0,12.0,13.0,0.5833333333333334,65.40378025,1.0,0.0,0.4166666666666667
 20260912,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,12.0,11.0,13.0,0.9166666666666666,0.3002715,0.0,0.0,0.08333333333333333
-20250913,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,11.0,11.0,23.0,0.09090909090909091,87.53260736363637,1.0,0.0,0.9090909090909091
 20250915,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,11.0,11.0,18.0,0.18181818181818182,12.294595454545457,0.0,0.0,0.8181818181818182
 20250916,Nossa história - Almeida Junior,/pt-br/nossa-historia/,11.0,9.0,8.0,0.45454545454545453,172.28642690909092,1.0,0.0,0.5454545454545454
 20250917,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,11.0,8.0,12.0,0.8181818181818182,46.41627281818182,0.0,0.0,0.18181818181818182
@@ -3620,7 +3619,6 @@
 20260908,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,10.0,9.0,11.0,0.0,199.278572,0.0,0.0,1.0
 20260911,Nossa história - Almeida Junior,/pt-br/nossa-historia/,10.0,10.0,10.0,0.0,168.2590033,0.0,0.0,1.0
 20260912,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,10.0,10.0,10.0,0.5,47.3052172,0.0,0.0,0.5
-20250913,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,9.0,9.0,8.0,0.7777777777777778,6.967084333333334,1.0,0.0,0.2222222222222222
 20250915,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,9.0,9.0,9.0,0.3333333333333333,58.90092799999999,0.0,0.0,0.6666666666666666
 20250916,Balneário Shopping - Franquias - Almeida Junior,/pt-br/franquias/balneario-shopping/,9.0,8.0,16.0,0.2222222222222222,52.904445555555554,0.0,0.0,0.7777777777777778
 20250917,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,9.0,9.0,10.0,0.4444444444444444,113.19220188888889,0.0,0.0,0.5555555555555556
@@ -3994,7 +3992,7 @@
 20260911,Garten Shopping - Franquias - Almeida Junior,/pt-br/franquias/garten-shopping/,9.0,9.0,11.0,0.5555555555555556,8.862400222222222,0.0,0.0,0.4444444444444444
 20260911,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,9.0,9.0,10.0,0.3333333333333333,24.677532111111113,1.0,0.0,0.6666666666666666
 20260911,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,9.0,9.0,10.0,0.7777777777777778,1.2828655555555555,0.0,0.0,0.2222222222222222
-20250913,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,8.0,8.0,8.0,0.75,3.75429675,0.0,0.0,0.25
+20260913,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,9.0,8.0,10.0,0.7777777777777778,46.64233222222222,0.0,0.0,0.2222222222222222
 20250914,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,8.0,8.0,8.0,0.75,5.9410675,1.0,0.0,0.25
 20250914,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,8.0,8.0,17.0,0.125,9.16476375,0.0,0.0,0.875
 20250915,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,8.0,8.0,9.0,0.5,21.249277499999998,0.0,0.0,0.5
@@ -4378,9 +4376,7 @@
 20260910,Contato - Almeida Junior,/pt-br/contato/,8.0,7.0,7.0,0.125,564.12871575,2.0,0.0,0.875
 20260911,Contato - Almeida Junior,/pt-br/contato/,8.0,7.0,7.0,0.25,149.564243375,2.0,0.0,0.75
 20260912,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,8.0,8.0,8.0,0.5,242.59545375,0.0,0.0,0.5
-20250913,Cotton On - Almeida Junior,/pt-br/franquias/garten-shopping/cotton-on/,7.0,7.0,8.0,0.7142857142857143,242.670238,0.0,0.0,0.2857142857142857
-20250913,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,7.0,7.0,14.0,0.14285714285714285,16.456626857142858,0.0,0.0,0.8571428571428571
-20250913,Nossa história - Almeida Junior,/pt-br/nossa-historia/,7.0,7.0,9.0,0.14285714285714285,15.60416114285714,0.0,0.0,0.8571428571428571
+20260913,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,8.0,7.0,7.0,0.125,24.954588,0.0,0.0,0.875
 20250914,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,7.0,7.0,8.0,0.42857142857142855,89.527597,0.0,0.0,0.5714285714285714
 20250914,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,7.0,7.0,8.0,0.2857142857142857,285.72298971428575,0.0,0.0,0.7142857142857143
 20250915,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,7.0,7.0,11.0,0.42857142857142855,4.203174571428572,0.0,0.0,0.5714285714285714
@@ -4854,8 +4850,8 @@
 20260911,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,7.0,5.0,7.0,0.14285714285714285,19.902574428571427,3.0,0.0,0.8571428571428571
 20260912,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,7.0,7.0,9.0,0.5714285714285714,204.02603557142857,0.0,0.0,0.42857142857142855
 20260912,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,7.0,7.0,8.0,0.7142857142857143,16.72494485714286,1.0,0.0,0.2857142857142857
-20250913,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,6.0,6.0,6.0,0.6666666666666666,4.941941666666667,0.0,0.0,0.3333333333333333
-20250913,Contato - Almeida Junior,/pt-br/contato/,6.0,5.0,5.0,0.0,43.96917933333333,1.0,0.0,1.0
+20260913,AJFans Clientes - Cadastro existente - Almeida Junior,/pt-br/app-ajfans-cadastrado-existe/,7.0,7.0,8.0,0.0,111.770807,0.0,0.0,1.0
+20260913,AJFans Clientes - Cadastro realizado com sucesso - Almeida Junior,/pt-br/app-ajfans-cadastrado/,7.0,7.0,7.0,0.0,90.851719,0.0,0.0,1.0
 20250914,Nossa história - Almeida Junior,/pt-br/nossa-historia/,6.0,6.0,6.0,0.16666666666666666,13.515528833333333,0.0,0.0,0.8333333333333334
 20250915,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,6.0,6.0,10.0,0.16666666666666666,3.0939755000000004,0.0,0.0,0.8333333333333334
 20250916,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,6.0,4.0,5.0,0.16666666666666666,21.455907333333332,0.0,0.0,0.8333333333333334
@@ -5467,6 +5463,7 @@
 20260910,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,6.0,6.0,5.0,0.6666666666666666,4.670006666666667,0.0,0.0,0.3333333333333333
 20260911,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,6.0,5.0,6.0,0.3333333333333333,59.191230999999995,2.0,0.0,0.6666666666666666
 20260912,Contato - Almeida Junior,/pt-br/contato/,6.0,6.0,6.0,0.0,107.59254483333332,1.0,0.0,1.0
+20260913,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,6.0,5.0,6.0,0.5,45.49809883333333,0.0,0.0,0.5
 20250914,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,5.0,5.0,5.0,0.8,26.496993800000002,0.0,0.0,0.2
 20250914,Contato - Almeida Junior,/pt-br/contato/,5.0,5.0,5.0,0.0,83.83909700000001,2.0,0.0,1.0
 20250914,Norte Shopping - Franquias - Almeida Junior,/pt-br/franquias/norte-shopping/,5.0,5.0,9.0,0.2,12.689459600000001,1.0,0.0,0.8
@@ -6209,8 +6206,7 @@
 20260911,Aniversário - Continente Shopping - Almeida Junior,/pt-br/continente-shopping/aniversario/,5.0,5.0,4.0,0.6,22.783999,0.0,0.0,0.4
 20260912,AJFans Clientes - Cadastro realizado com sucesso - Almeida Junior,/pt-br/app-ajfans-cadastrado/,5.0,5.0,5.0,0.0,12.6326088,0.0,0.0,1.0
 20260912,Aniversário - Balneário Shopping - Almeida Junior,/pt-br/balneario-shopping/aniversario/,5.0,5.0,5.0,0.4,17.9717798,0.0,0.0,0.6
-20250913,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,4.0,4.0,4.0,0.5,8.3312045,0.0,0.0,0.5
-20250913,AJFans Clientes - Cadastro existente - Almeida Junior,/pt-br/app-ajfans-cadastrado-existe/,4.0,4.0,4.0,0.0,8.57509175,0.0,0.0,1.0
+20260913,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,5.0,5.0,6.0,0.6,8.2691248,0.0,0.0,0.4
 20250914,AJFans Clientes - Cadastro existente - Almeida Junior,/pt-br/app-ajfans-cadastrado-existe/,4.0,4.0,4.0,0.0,15.4716815,0.0,0.0,1.0
 20250914,Cotton On - Almeida Junior,/pt-br/franquias/garten-shopping/cotton-on/,4.0,3.0,6.0,0.25,258.26994675000003,0.0,0.0,0.75
 20250915,AJFans Clientes - Cadastro realizado com sucesso - Almeida Junior,/pt-br/app-ajfans-cadastrado/,4.0,4.0,4.0,0.0,133.72029525,0.0,0.0,1.0
@@ -7120,8 +7116,10 @@
 20260912,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,4.0,4.0,4.0,0.0,38.43304975,0.0,0.0,1.0
 20260912,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,4.0,3.0,4.0,0.75,5.519366,1.0,0.0,0.25
 20260912,Nossa história - Almeida Junior,/pt-br/nossa-historia/,4.0,4.0,4.0,0.0,8.698325,0.0,0.0,1.0
-20250913,AJFans Clientes - Almeida Junior,/pt-br/balneario-shopping/ajfans/,3.0,3.0,3.0,0.6666666666666666,0.0,0.0,0.0,0.3333333333333333
-20250913,AJFans Clientes - Cadastro realizado com sucesso - Almeida Junior,/pt-br/app-ajfans-cadastrado/,3.0,3.0,3.0,0.0,458.846564,0.0,0.0,1.0
+20260913,AJFans Clientes - Almeida Junior,/pt-br/continente-shopping/ajfans/,4.0,4.0,4.0,0.25,91.110174,0.0,0.0,0.75
+20260913,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,4.0,4.0,5.0,0.0,64.36118375,0.0,0.0,1.0
+20260913,Aniversário - Continente Shopping - Almeida Junior,/pt-br/continente-shopping/aniversario/,4.0,3.0,4.0,0.25,17.32072625,0.0,0.0,0.75
+20260913,Contato - Almeida Junior,/pt-br/contato/,4.0,4.0,6.0,0.0,7.75361325,0.0,0.0,1.0
 20250914,AJFans Clientes - Cadastro realizado com sucesso - Almeida Junior,/pt-br/app-ajfans-cadastrado/,3.0,3.0,3.0,0.0,277.67226066666666,0.0,0.0,1.0
 20250914,Continente Shopping Residences registra sucesso de vendas com 112 apartamentos comercializados em apenas 48 horas - Almeida Junior,/pt-br/vendas-csresidences/,3.0,3.0,3.0,0.0,93.91526266666666,0.0,0.0,1.0
 20250914,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,3.0,3.0,3.0,0.0,422.2774426666667,1.0,0.0,1.0
@@ -7172,7 +7170,7 @@
 20251002,Home - Almeida Junior,/en/,3.0,3.0,3.0,0.0,198.64434466666668,0.0,0.0,1.0
 20251002,Imprensa e notícias - Almeida Junior,/pt-br/imprensa-e-noticias/,3.0,3.0,3.0,0.3333333333333333,70.31239933333333,0.0,0.0,0.6666666666666666
 20251002,Inovação - Almeida Junior,/pt-br/inovacao/,3.0,3.0,4.0,0.0,43.95176266666667,0.0,0.0,1.0
-20251002,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,3.0,3.0,7.0,0.3333333333333333,179.86127533333334,0.0,0.0,0.6666666666666666
+20251002,Nações Shopping - Franquias - Almeida Junior,/pt-br/franquias/nacoes-shopping/,3.0,3.0,7.0,0.3333333333333333,179.8612753333333,0.0,0.0,0.6666666666666666
 20251002,Neumarkt Shopping - Franquias - Almeida Junior,/pt-br/franquias/neumarkt-shopping/,3.0,3.0,8.0,0.0,21.89927,0.0,0.0,1.0
 20251002,Responsabilidade corporativa - Almeida Junior,/pt-br/responsabilidade-corporativa/,3.0,3.0,1.0,0.3333333333333333,39.95199266666667,1.0,0.0,0.6666666666666666
 20251003,Gift card digital pelo AJFans: presenteie e receba cashback - Almeida Junior,/pt-br/giftcard/,3.0,2.0,3.0,0.3333333333333333,28.002724,0.0,0.0,0.6666666666666666
@@ -8310,13 +8308,8 @@
 20260912,AJFans Clientes - Almeida Junior,/pt-br/nacoes-shopping/ajfans/,3.0,3.0,3.0,0.3333333333333333,239.930417,0.0,0.0,0.6666666666666666
 20260912,Malls - Almeida Junior,/en/malls/,3.0,3.0,3.0,0.0,19.235227,0.0,0.0,1.0
 20260912,Programa de integridade - Almeida Junior,/pt-br/programa-de-integridade/,3.0,3.0,3.0,1.0,0.0,0.0,0.0,0.0
-20250913,Almeida Junior e WAY Model Buscam Novos Talentos da Moda em SC - Almeida Junior,/pt-br/seletiva-way-model-sc/,2.0,2.0,2.0,0.5,86.322775,0.0,0.0,0.5
-20250913,Bacio di Latte - Almeida Junior,/pt-br/franquias/garten-shopping/baciodilatte/,2.0,2.0,4.0,0.0,12.7408995,0.0,0.0,1.0
-20250913,Clientes AJFans - Almeida Junior,/pt-br/continente-shopping/ajfans/,2.0,2.0,2.0,0.5,32.5828005,0.0,0.0,0.5
-20250913,Contagem Regressiva: Abertura das Vendas do Continente Shopping Residences - Almeida Junior,/pt-br/contagem-regressiva-csresidences/,2.0,2.0,2.0,0.5,914.349043,0.0,0.0,0.5
-20250913,Continente Shopping Residences registra sucesso de vendas com 112 apartamentos comercializados em apenas 48 horas - Almeida Junior,/pt-br/vendas-csresidences/,2.0,2.0,2.0,0.0,97.4877115,0.0,0.0,1.0
-20250913,Fast Escova - Almeida Junior,/pt-br/franquias/neumarkt-shopping/griletto-2/,2.0,2.0,1.0,0.0,22.5623335,1.0,0.0,1.0
-20250913,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,2.0,2.0,2.0,0.0,11.966271,0.0,0.0,1.0
+20260913,AJFans Clientes - Almeida Junior,/pt-br/garten-shopping/ajfans/,3.0,3.0,3.0,0.6666666666666666,13.769052666666667,0.0,0.0,0.3333333333333333
+20260913,Aniversário - Balneário Shopping - Almeida Junior,/pt-br/balneario-shopping/aniversario/,3.0,3.0,3.0,0.0,488.77029300000004,0.0,0.0,1.0
 20250914,Contagem Regressiva: Abertura das Vendas do Continente Shopping Residences - Almeida Junior,/pt-br/contagem-regressiva-csresidences/,2.0,1.0,1.0,0.5,6.8532235,0.0,0.0,0.5
 20250914,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,2.0,2.0,1.0,0.0,27.942658,1.0,0.0,1.0
 20250915,Contagem Regressiva: Abertura das Vendas do Continente Shopping Residences - Almeida Junior,/pt-br/contagem-regressiva-csresidences/,2.0,2.0,2.0,0.0,582.9071245,0.0,0.0,1.0
@@ -10511,32 +10504,14 @@
 20260912,Imprensa e notícias - Almeida Junior,/pt-br/imprensa-e-noticias/,2.0,2.0,2.0,0.5,143.5737585,0.0,0.0,0.5
 20260912,Oportunidades de negócio - Almeida Junior,/pt-br/oportunidades-de-negocio/,2.0,2.0,2.0,0.0,17.5773335,0.0,0.0,1.0
 20260912,Zara Home inaugura nova loja em Balneário Camboriú - Almeida Junior,/pt-br/zarahome-balneariocamboriu-santacatarina/,2.0,2.0,3.0,0.0,42.4465025,0.0,0.0,1.0
-20250913,Almeida Junior is bronze in the Abrasce Awards with autism awareness actions - Almeida Junior,/en/almeida-junior-is-bronze-in-the-abrasce-awards-with-autism-awareness-actions/,1.0,1.0,1.0,1.0,1.539152,0.0,0.0,0.0
-20250913,Bibi - Almeida Junior,/pt-br/franquias/norte-shopping/bibi/,1.0,1.0,2.0,0.0,9.042294,0.0,0.0,1.0
-20250913,Clientes AJFans - Almeida Junior,/pt-br/balneario-shopping/ajfans/,1.0,1.0,0.0,0.0,25.915226,0.0,0.0,1.0
-20250913,Colcci - Almeida Junior,/pt-br/franquias/garten-shopping/colcci/,1.0,1.0,2.0,0.0,15.531225,0.0,0.0,1.0
-20250913,Criamigos - Almeida Junior,/pt-br/franquias/neumarkt-shopping/criamigos/,1.0,1.0,2.0,0.0,8.120357,0.0,0.0,1.0
-20250913,Crocs - Almeida Junior,/pt-br/franquias/garten-shopping/crocs/,1.0,1.0,2.0,0.0,35.258596,0.0,0.0,1.0
-20250913,Dengo - Almeida Junior,/pt-br/franquias/garten-shopping/dengo/,1.0,1.0,2.0,0.0,13.724509,0.0,0.0,1.0
-20250913,Imaginarium  - Almeida Junior,/pt-br/franquias/garten-shopping/imaginarium/,1.0,1.0,2.0,0.0,4.449367,0.0,0.0,1.0
-20250913,Imprensa e notícias - Almeida Junior,/pt-br/imprensa-e-noticias/,1.0,1.0,1.0,0.0,6.377551,0.0,0.0,1.0
-20250913,Jogê - Almeida Junior,/pt-br/franquias/neumarkt-shopping/joge-2/,1.0,1.0,1.0,0.0,14.328826,0.0,0.0,1.0
-20250913,Laser & Company - Almeida Junior,/pt-br/franquias/neumarkt-shopping/laserco/,1.0,1.0,1.0,0.0,6.138015,0.0,0.0,1.0
-20250913,Le Briju - Almeida Junior,/pt-br/franquias/neumarkt-shopping/lebriju/,1.0,1.0,1.0,0.0,14.148735,0.0,0.0,1.0
-20250913,Lilica & Tigor - Almeida Junior,/pt-br/franquias/neumarkt-shopping/lilica-tigor/,1.0,1.0,1.0,0.0,24.096429,0.0,0.0,1.0
-20250913,Lounges para sócios são diferencial dos shoppings Almeida Junior - Almeida Junior,/pt-br/lounges-para-socios-sao-diferencial-dos-shoppings-almeida-junior/,1.0,1.0,1.0,0.0,13.161029,0.0,0.0,1.0
-20250913,Lugano Gramado - Almeida Junior,/pt-br/franquias/neumarkt-shopping/bibi-2/,1.0,1.0,2.0,0.0,6.933855,0.0,0.0,1.0
-20250913,Me Nota Way: confira os finalistas - Almeida Junior,/pt-br/me-nota-way-finalistas/,1.0,1.0,1.0,0.0,14.235011,0.0,0.0,1.0
-20250913,Pampili - Almeida Junior,/pt-br/franquias/neumarkt-shopping/pampili/,1.0,1.0,1.0,0.0,16.815006,0.0,0.0,1.0
-20250913,Petite Jolie - Almeida Junior,/pt-br/franquias/neumarkt-shopping/petite-jolie/,1.0,1.0,1.0,0.0,323.240453,0.0,0.0,1.0
-20250913,Pizza Hut - Almeida Junior,/pt-br/franquias/garten-shopping/pizzahut/,1.0,1.0,1.0,0.0,18.194462,0.0,0.0,1.0
-20250913,Plié - Almeida Junior,/pt-br/franquias/neumarkt-shopping/plie/,1.0,1.0,1.0,0.0,9.549003,0.0,0.0,1.0
-20250913,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
-20250913,Primeira OMO Lavanderia de Santa Catarina inaugura no Neumarkt Shopping - Almeida Junior,/pt-br/primeira-omo-lavanderia-de-santa-catarina-inaugura-no-neumarkt-shopping/,1.0,1.0,1.0,1.0,6.093679,0.0,0.0,0.0
-20250913,Puket - Almeida Junior,/pt-br/franquias/neumarkt-shopping/puket/,1.0,1.0,2.0,0.0,18.33596,0.0,0.0,1.0
-20250913,Richards - Almeida Junior,/pt-br/franquias/neumarkt-shopping/richards/,1.0,1.0,2.0,0.0,23.331613,0.0,0.0,1.0
-20250913,Valisere - Almeida Junior,/pt-br/franquias/continente-shopping/valisere/,1.0,1.0,2.0,0.0,13.030917,0.0,0.0,1.0
-20250913,Zapalla - Almeida Junior,/pt-br/franquias/neumarkt-shopping/zapalla/,1.0,1.0,1.0,0.0,2.810846,0.0,0.0,1.0
+20260913,AJFans Clientes - Almeida Junior,/pt-br/neumarkt-shopping/ajfans/,2.0,2.0,2.0,0.5,20.062299,0.0,0.0,0.5
+20260913,AJFans Clientes - Almeida Junior,/pt-br/norte-shopping/ajfans/,2.0,2.0,2.0,0.0,49.3417465,0.0,0.0,1.0
+20260913,Aniversário - Nações Shopping - Almeida Junior,/pt-br/nacoes-shopping/aniversario/,2.0,1.0,2.0,1.0,3.730398,0.0,0.0,0.0
+20260913,ESG - Almeida Junior,/pt-br/esg/,2.0,2.0,2.0,0.5,3.4139925,0.0,0.0,0.5
+20260913,Garten e Nações recebem unidades da Polícia Federal - Almeida Junior,/pt-br/garten-e-nacoes-recebem-unidades-da-policia-federal/,2.0,2.0,2.0,0.5,23.099430499999997,0.0,0.0,0.5
+20260913,Neumarkt Shopping - Franchises - Almeida Junior,/en/franchises/neumarkt-shopping/embed/,2.0,2.0,2.0,1.0,0.0,0.0,0.0,0.0
+20260913,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/,2.0,2.0,2.0,0.5,9.4720415,1.0,0.0,0.5
+20260913,Shoppings Almeida Junior sorteiam seis vales-compra de R$ 100 mil cada na promoção “Prêmios Pra Valer” - Almeida Junior,/pt-br/shoppings-almeida-junior-sorteiam-seis-vales-compra-de-r-100-mil-cada-na-promocao-premios-pra-valer/embed/,2.0,2.0,2.0,1.0,0.0,0.0,0.0,0.0
 20250914,Balneário Shopping - Franquicias - Almeida Junior,/pt-br/franquias/balneario-shopping/,1.0,1.0,2.0,0.0,7.285315,0.0,0.0,1.0
 20250914,Balneário Shopping concentra as principais marcas globais em Santa Catarina e anuncia novas lojas - Almeida Junior,/pt-br/balneario-shopping-concentra-as-principais-marcas-globais-em-santa-catarina-e-anuncia-novas-lojas/,1.0,1.0,1.0,0.0,6.542405,0.0,0.0,1.0
 20250914,Biscoitê - Almeida Junior,/pt-br/franquias/neumarkt-shopping/biscoite/,1.0,1.0,2.0,0.0,15.534957,0.0,0.0,1.0
@@ -20080,3 +20055,40 @@
 20260912,Tip Top Megastore - Almeida Junior,/en/franchises/garten-shopping/tip-top-megastore/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
 20260912,UZA Shoes - Almeida Junior,/en/franchises/garten-shopping/uza-shoes/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
 20260912,Valisere - Almeida Junior,/pt-br/franquias/nacoes-shopping/valisere/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,AJPlace: o primeiro marketplace corporativo de shopping centers no Brasil - Almeida Junior,/pt-br/ajplace-o-primeiro-marketplace-corporativo-de-shopping-centers-no-brasil/,1.0,1.0,1.0,0.0,44.138064,0.0,0.0,1.0
+20260913,"Almeida Junior brings Susana Barbosa, from ELLE Brasil, to cities in Santa Catarina with talks on fashion and behavior - Almeida Junior",/en/susana-barbosa-talk/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Almeida Junior is founded in Blumenau - Almeida Junior,/en/story/almeida-junior-is-founded-in-blumenau/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,"Almeida Junior lança campanha para valorizar o presente: ""Viva o que há pra viver"" - Almeida Junior",/pt-br/almeida-junior-lanca-campanha-para-valorizar-o-presente-viva-o-que-ha-pra-viver/,1.0,1.0,1.0,0.0,127.453067,0.0,0.0,1.0
+20260913,"Almeida Junior lança o AJFans, o SuperApp dos shoppings da companhia - Almeida Junior",/pt-br/almeida-junior-lanca-o-ajfans-o-superapp-dos-shoppings-da-companhia/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Aniversário - Neumarkt Shopping - Almeida Junior,/pt-br/neumarkt-shopping/aniversario/,1.0,1.0,1.0,0.0,36.720173,0.0,0.0,1.0
+20260913,Aniversário - Norte Shopping - Almeida Junior,/pt-br/norte-shopping/aniversario/,1.0,1.0,1.0,0.0,16.387776,0.0,0.0,1.0
+20260913,Balneário Shopping concentra as principais marcas globais em Santa Catarina e anuncia novas lojas - Almeida Junior,/pt-br/balneario-shopping-concentra-as-principais-marcas-globais-em-santa-catarina-e-anuncia-novas-lojas/,1.0,1.0,1.0,0.0,63.886175,0.0,0.0,1.0
+20260913,Bayard - Almeida Junior,/pt-br/franquias/neumarkt-shopping/biscoite-3/embed/,1.0,1.0,1.0,1.0,8.030615,0.0,0.0,0.0
+20260913,Chocolates Brasil Cacau - Almeida Junior,/en/franchises/garten-shopping/chocolates-brasil-cacau/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Cia Marítima - Almeida Junior,/pt-br/franquias/balneario-shopping/cia-maritima/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Criamigos - Almeida Junior,/pt-br/franquias/continente-shopping/criamigos/,1.0,1.0,1.0,0.0,7.675131,0.0,0.0,1.0
+20260913,Deu match: vinho e chocolate! - Almeida Junior,/pt-br/deu-match-vinho-e-chocolate/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Farm chega ao Balneário Shopping com nova coleção de inverno - Almeida Junior,/pt-br/farm-bobstore-ellus-e-mais-saiba-quais-marcas-irao-inaugurar-no-balneario-shopping-nas-proximas-semanas/,1.0,1.0,1.0,1.0,5.562409,0.0,0.0,0.0
+20260913,Giraffas - Almeida Junior,/pt-br/franquias/neumarkt-shopping/giraffas/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Grupo Almeida Junior é destaque na Revista Forbes com força econômica da Região Sul  - Almeida Junior,/pt-br/grupo-almeida-junior-e-destaque-na-revista-forbes-com-forca-economica-da-regiao-sul/,1.0,1.0,1.0,1.0,5.315095,0.0,0.0,0.0
+20260913,Imprensa e notícias - Almeida Junior,/pt-br/imprensa-e-noticias/,1.0,1.0,1.0,0.0,0.167882,0.0,0.0,1.0
+20260913,"Inauguração do Balneário Shopping, em Balneário Camboriú - SC - Almeida Junior",/pt-br/story/mudanca-de-sede-para-a-cidade-de-sao-paulo-sp-2/,1.0,1.0,1.0,0.0,101.175656,0.0,0.0,1.0
+20260913,Jaimes Almeida Junior participará do próximo LIDE Talks - Almeida Junior,/pt-br/jaimes-de-almeida-junior-participara-do-proximo-lide-talks/,1.0,1.0,1.0,0.0,114.164799,0.0,0.0,1.0
+20260913,Le Briju - Almeida Junior,/pt-br/franquias/neumarkt-shopping/lebriju/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Loungerie - Almeida Junior,/pt-br/franquias/norte-shopping/loungerie/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Lounges para sócios são diferencial dos shoppings Almeida Junior - Almeida Junior,/pt-br/lounges-para-socios-sao-diferencial-dos-shoppings-almeida-junior/,1.0,1.0,1.0,0.0,10.173292,0.0,0.0,1.0
+20260913,Malls - Almeida Junior,/en/malls/,1.0,1.0,1.0,0.0,16.341963,0.0,0.0,1.0
+20260913,Officialization of the IPO via FII AJ Malls to expand projects - Almeida Junior,/en/story/officialization-of-the-ipo-via-fii-aj-malls-to-expand-projects/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Our history - Almeida Junior,/en/our-history/,1.0,1.0,1.0,0.0,1.914244,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/contact.html,1.0,1.0,1.0,0.0,5.201487,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/contacto,1.0,1.0,1.0,0.0,5.95216,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/contato.html,1.0,1.0,1.0,0.0,3.551134,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/fale-conosco,1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/fale_conosco,1.0,1.0,1.0,0.0,5.695216,0.0,0.0,1.0
+20260913,Page not found - Almeida Junior,/faleconosco,1.0,1.0,1.0,0.0,5.790374,0.0,0.0,1.0
+20260913,Politicas de Privacidade - Almeida Junior,/pt-br/politicas-de-privacidade/embed/,1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+20260913,Programa de integridade - Almeida Junior,/pt-br/programa-de-integridade/,1.0,1.0,1.0,1.0,6.811362,0.0,0.0,0.0
+20260913,Responsabilidade corporativa - Almeida Junior,/pt-br/responsabilidade-corporativa/,1.0,1.0,1.0,0.0,11.224865,0.0,0.0,1.0
+20260913,Shoppings Almeida Junior realizam campanha virtual de adoção pet - Almeida Junior,/pt-br/shoppings-almeida-junior-promovem-adocao-de-animais-virtual/,1.0,1.0,1.0,0.0,1751.07109,0.0,0.0,1.0
+20260913,Zee Dog - Almeida Junior,/pt-br/franquias/balneario-shopping/zeedog/,1.0,1.0,1.0,1.0,4.816436,0.0,0.0,0.0
+20260913,Zee Dog - Almeida Junior,/pt-br/franquias/balneario-shopping/zeedog/embed/,1.0,1.0,1.0,0.0,12.748918,0.0,0.0,1.0
