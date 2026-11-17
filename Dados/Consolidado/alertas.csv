@@ -1,7 +1,8 @@
 ﻿plataforma,tipo,severidade,mensagem,metrica,valor_atual,valor_media
-TikTok Ads,saturacao_ctr,Media,"CTR em queda consistente (1.58% medio, tendencia negativa)",ctr,0.0,1.58031007751938
+TikTok Ads,saturacao_ctr,Media,"CTR em queda consistente (1.56% medio, tendencia negativa)",ctr,0.0,1.5559689922480622
 Meta Ads,anomalia_custo,Alta,CUSTO subiu 89% vs media movel 7d,custo,2180.5699999999997,1153.5685714285714
 Meta Ads,anomalia_cpa,Media,CPA subiu 73% vs media movel 7d,cpa,0.9934259681093393,0.5741325151181448
 Meta Ads,anomalia_ctr,Media,CTR caiu 14% vs media movel 7d,ctr,0.8187813684210525,0.9566610847762043
-Google Ads,anomalia_custo,Alta,CUSTO subiu 87% vs media movel 7d,custo,999.232948,533.6230171428568
-Google Ads,anomalia_cpa,Alta,CPA subiu 2691% vs media movel 7d,cpa,13.323105973333332,0.47731934517075986
+Google Ads,anomalia_custo,Media,CUSTO subiu 89% vs media movel 7d,custo,1148.858705,609.2342397142854
+Google Ads,anomalia_cpa,Alta,CPA subiu 2766% vs media movel 7d,cpa,16.894980955882353,0.5895927609863972
+Google Ads,anomalia_ctr,Alta,CTR caiu 32% vs media movel 7d,ctr,0.02188967136150235,0.03210450795926137
